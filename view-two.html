@@ -42,17 +42,22 @@
 				})
 				.entries(data); // <!-- Specifying on what data to do the grouping -->
 
+
+
+
+
 			// <!-- Printing new nested data in console to check if correct -->
 			console.log(nestedBar);
+			
 
-			var svg = d3.select('#Bar_Chart')
-				.attr('height', height - margin)
-				.attr('width', width - margin)
-				.attr('viewBox', [0, 0, height, width]);
+			<!-- Getting scale of x axes, of minimum to maximum date -->
+			var extendTime  = d3.extent(data, function (d) {return d.Season;});
+			console.log(extendTime);
 
+			<!-- x axes scale creation -->
 			var xScale = d3.scaleBand()
-				.domain(d3.range(nestedBar.length))
-				.padding(0.1);
+					.domain(extendTime)
+					.range([0, width]);
 
 			// <!-- y axes scale creation -->
 
@@ -62,19 +67,46 @@
 				transferFees.push(d.value)
 			});
 
+
 			var extendMoney = d3.extent(transferFees, function (d) { return parseInt(d); });
 
 			var yScale = d3.scaleLinear()
 				.domain(extendMoney)
-				.range([height - margin]);
+				.range([height, 0]);
 
-			svg
-				.append("g")
-				.attr("fill", "red")
-				.selectAll('rect');
 
-			svg.node();
 
+			var x_axis = d3.axisBottom(xScale);
+			var y_axis = d3.axisLeft(yScale);
+
+			var svg = d3.select("#Bar_Chart")
+					.append('svg')
+					.attr('height', height + margin)
+					.attr('width', width + margin);
+
+			svg.append("g")
+					.attr("class", "x axis")
+					.attr("transform", "translate("+margin+","+height+")")
+					.call(x_axis);
+
+			svg.append("g")
+					.attr("class", "y axis")
+					.attr("transform", "translate("+margin+",0)")
+					.call(y_axis);
+
+			var lineTrans = d3.line()
+					.x(function (d) {
+						return margin+xScale(d.key);
+
+					})
+					.y(function(d) {
+						return yScale(parseInt(d.value));
+					});
+
+			svg.append("path")
+					.datum(nestedBar.values)
+					.attr("class", "line")
+					.attr("d", lineTrans);
 
 
 		});
