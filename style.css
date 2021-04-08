@@ -14,7 +14,7 @@ html, body {
 
 /* Nav Bar */
 #navbar {
-    background: #000;
+    background: #333;
     color: #fff;
     overflow: auto;
 }
@@ -30,11 +30,11 @@ html, body {
 }
 
 #navbar .current {
-    background: #333;
+    background: #444;
 }
 
 #navbar ul li:hover {
-    background: #333;
+    background: #444;
 }
 
 #navbar ul li a {
