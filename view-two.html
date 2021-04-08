@@ -24,7 +24,7 @@
 <!-- Script organizing the data to visualize later. -->
 <script>
 
-	var dataPath = "data/updated_data.csv";
+	var dataPath = "data/top250-00-19.csv";
 
 	// Margin variable to use to position visualisation more precise
 	var margin = {top: 75, bottom: 75, left: 75, right:75};
@@ -49,13 +49,23 @@
 					//  Specifying what attribute to sum for the bar chart (Transfer_fee)
 					return d3.sum(leaves, function (d) {
 						//  Need to tranform numbers to int because they are strings now.
-						return parseInt(d.Transfer_fee);
+						return parseInt(d.Transfer_fee)
+
 					})
 				})
 				.entries(data); // Specifying on what data to do the grouping
 
 			//  Printing new nested data in console to check if correct
 			console.log(nestedBar);
+
+			var nameData = d3.nest()
+					.key(function (d) {
+						// Which attribute i want the grouping to occur on
+						return d.Season;
+					})
+					.rollup(function (leaves){
+						// specifying what we looking for
+					})
 
 			// DATA IS BEING USED TO PLOT NOW.
 
