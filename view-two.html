@@ -34,41 +34,64 @@
 	var width = 800 - margin.right - margin.left;	//width of the svg element (in pixels)
 	var height = 400 - margin.top - margin.bottom; //height of the svg element
 
-
+	function sortBySeason() {
 	// Reading the data in the javascript enviroment.
 	d3.csv(dataPath)
 		.then(function (data) {
-			//  Printing in console to make sure all working correct
-			console.log(data);
 
 			//  Because we want to create a bar chart for the sum(fees) for every season
 			//  We need to use nest() to group data according to the season of the observation
-			var nestedBar = d3.nest()
-				.key(function (d) {
-					//  Specifying how we want to do the grouping
-					return d.Season;
-				})
-				.rollup(function (leaves) {
-					//  Specifying what attribute to sum for the bar chart (Transfer_fee)
-					return d3.sum(leaves, function (d) {
-						//  Need to tranform numbers to int because they are strings now.
-						return parseInt(d.Transfer_fee)
-
+			var dataBy_Season = d3.nest()
+					.key(function (d) {
+						//  Specifying how we want to do the grouping
+						return d.Season;
 					})
-				})
-				.entries(data); // Specifying on what data to do the grouping
+					.rollup(function (leaves) {
+						//  Specifying what attribute to sum for the bar chart (Transfer_fee)
+						return d3.sum(leaves, function (d) {
+							//  Need to tranform numbers to int because they are strings now.
+							return parseInt(d.Transfer_fee)
 
-			//  Printing new nested data in console to check if correct
-			console.log(nestedBar);
+						})
+					})
+					.entries(data); // Specifying on what data to do the grouping
+			createBy(dataBy_Season);
+		});
 
-			var nameData = d3.nest()
-				.key(function (d) {
-					// Which attribute i want the grouping to occur on
-					return d.Season;
-				})
-				.rollup(function (leaves) {
-					// specifying what we looking for
-				})
+		};
+
+		function sortByPosition() {
+			// Reading the data in the javascript enviroment.
+			d3.csv(dataPath)
+					.then(function (data) {
+
+
+			// Create Bar Graph by position.
+			var dataBy_Position = d3.nest()
+					.key(function (d) {
+						// Which attribute i want the grouping to occur on
+						return d.Position;
+					})
+					.rollup(function (leaves) {
+						//  Specifying what attribute to sum for the bar chart (Transfer_fee)
+						return d3.sum(leaves, function (d) {
+							//  Need to tranform numbers to int because they are strings now.
+							return parseInt(d.Transfer_fee)
+
+						})
+					})
+					.entries(data);
+
+			createBy(dataBy_Position);
+					});
+
+		};
+
+</script>
+<script>
+
+	function createBy(data) {
+		alert("Inside");
 
 			// DATA IS BEING USED TO PLOT NOW.
 
@@ -76,12 +99,12 @@
 			// Creating the width of all bar chart and padding between each bar
 			var xScale = d3.scaleBand().range([0, width]).padding(0.05);
 			// Giving the domain of the x-axis
-			xScale.domain(nestedBar.map(function (d) { return d.key; }));
+			xScale.domain(data.map(function (d) { return d.key; }));
 
 			//Y-AXIS creation and domain
 			var yScale = d3.scaleLinear().range([height, 0]);
 			// Giving the domain from 0(since no transfers = 0) to the maximum transfer sum season.
-			yScale.domain([0, d3.max(nestedBar, function (d) { return parseInt(d.value); })]);
+			yScale.domain([0, d3.max(data, function (d) { return parseInt(d.value); })]);
 
 
 			// Creation of svg element.
@@ -118,7 +141,7 @@
 
 			// Selecting or bars created from scaleBand. One bar for each value in domain.
 			svg.selectAll("bar")
-				.data(nestedBar) // Data being used.
+				.data(data) // Data being used.
 				.enter().append("rect") // Each bar create rectangle
 				.style("fill", "steelblue")
 				.attr("class", "bar")
@@ -128,7 +151,10 @@
 				.attr("height", function (d) { return height - yScale(d.value); });
 
 
-		});
+		}
+
+		sortBySeason();
+
 </script>
 
 <body>
@@ -140,6 +166,13 @@
 		</ul>
 	</nav>
 	<h2>Second view of data here.</h2>
+	<form id = "sort_by">
+		<label for="data">Which data to compare:</label>
+		<select id="data" name="cars">
+			<option value="By Season" onclick="sortBySeason()">By Season</option>
+			<option value="By Players Position" onselect="sortByPosition()">By Player's Position</option>
+		</select>
+	</form>
 
 	<!-- Visualisation will be appeared. -->
 	<div id="Bar_Chart">
