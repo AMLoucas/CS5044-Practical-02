@@ -33,6 +33,17 @@
 	var margin = { top: 75, bottom: 75, left: 75, right: 75 };
 	var width = 800 - margin.right - margin.left;	//width of the svg element (in pixels)
 	var height = 400 - margin.top - margin.bottom; //height of the svg element
+	//have a starting state
+	sortBySeason();
+
+	function selectSort(option) {
+		if (option.localeCompare("1") == 0){
+			sortBySeason();
+		}
+		else {
+			sortByPosition();
+		}
+	}
 
 	function sortBySeason() {
 	// Reading the data in the javascript enviroment.
@@ -91,7 +102,7 @@
 <script>
 
 	function createBy(data) {
-		alert("Inside");
+		document.getElementById("Bar_Chart").innerHTML = "";
 
 			// DATA IS BEING USED TO PLOT NOW.
 
@@ -153,8 +164,6 @@
 
 		}
 
-		sortBySeason();
-
 </script>
 
 <body>
@@ -168,9 +177,9 @@
 	<h2>Second view of data here.</h2>
 	<form id = "sort_by">
 		<label for="data">Which data to compare:</label>
-		<select id="data" name="cars">
-			<option value="By Season" onclick="sortBySeason()">By Season</option>
-			<option value="By Players Position" onselect="sortByPosition()">By Player's Position</option>
+		<select id="data" onchange="selectSort(this.value)">
+			<option value="1">By Season</option>
+			<option value="2">By Player's Position</option>
 		</select>
 	</form>
 
