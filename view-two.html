@@ -285,6 +285,7 @@
 						return comparison;
 					}
 
+					// Sorting each object (each league) according to position of player.
 					final.forEach(function(d) {
 						d.values.sort(compare);
 						console.log(d.values);
@@ -298,8 +299,9 @@
 						positions.push(d.key);
 					});
 
+					// Using scale point so lines are plotted more precisely.
 					var xScale = d3.scalePoint()
-							.range([50, width])
+							.range([50, width+50]) // Start from 50 because dont want both axis to be stuck.
 							.domain(positions.sort());
 
 					// Y-AXIS creation and domain.
@@ -308,6 +310,7 @@
 						(d.values).forEach(function(e){transfer_per.push(e.value);})
 					});
 
+					// Getting the y axis creation and domain.
 					var y_ax = d3.extent(transfer_per, function(d){return parseInt(d);});
 					var yScale = d3.scaleLinear()
 							.range([height, 0])
@@ -347,6 +350,7 @@
 							.attr("dy", ".71em")
 							.style("text-anchor", "end");
 
+					// Creating the line generator.
 					var lineGenerator = d3.line()
 							.x(function(d){
 								return (xScale(d.key));
