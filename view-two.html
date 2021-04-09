@@ -266,6 +266,29 @@
 						final.push(data_for_line[iter]);
 					});
 
+					/**
+					 * Function for compare to sort the array of objects using each objects key.
+					 * Code was found from https://www.sitepoint.com/sort-an-array-of-objects-in-javascript/
+					 * Using code from here to do the sorting.
+					 */
+					function compare(a, b) {
+						// Use toUpperCase() to ignore character casing
+						const keyA = a.key.toUpperCase();
+						const keyB = b.key.toUpperCase();
+
+						let comparison = 0;
+						if (keyA > keyB) {
+							comparison = 1;
+						} else if (keyA < keyB) {
+							comparison = -1;
+						}
+						return comparison;
+					}
+
+					final.forEach(function(d) {
+						d.values.sort(compare);
+						console.log(d.values);
+					});
 
 
 					// X-AXIS creation and domain.
@@ -326,7 +349,7 @@
 
 					var lineGenerator = d3.line()
 							.x(function(d){
-								return (margin.left + margin.right + xScale(d.key));
+								return (xScale(d.key));
 							})
 							.y(function(d){
 								return yScale(parseInt(d.value));
