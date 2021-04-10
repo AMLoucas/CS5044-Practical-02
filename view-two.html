@@ -170,12 +170,15 @@
 								season_Selected.push(document.getElementById(season).value);
 							}
 						}
-						console.log(season_Selected);
+
 						// Reading the data in the javascript enviroment.
 
 						d3.csv(dataPath)
 								.then(function (data) {
 
+									// Filtering data and removing all records with seasons not interested in.
+									data = data.filter(season => season_Selected.includes(season.Season));
+									console.log(data);
 									//  Because we want to create a bar chart for the sum(fees) for every season
 									//  We need to use nest() to group data according to the season of the observation
 									var dataBy_Season = d3.nest()
@@ -197,9 +200,10 @@
 
 									// Anonymous function.
 									// Removes the objects with undefined season (season not interested).
-									dataBy_Season = dataBy_Season.filter(season => season.key != 'undefined');
-									console.log(dataBy_Season);
+									//dataBy_Season = dataBy_Season.filter(season => season.key != 'undefined');
+									//console.log(dataBy_Season);
 									createBy(dataBy_Season);
+									lineGraph(season_Selected);
 								});
 					};
 
@@ -277,292 +281,296 @@
 			<div id="Line_Chart" style="width: 100%; height: 100%;">
 
 				<script>
-					// Reading the data in the javascript enviroment.
-					d3.csv(dataPath)
-							.then(function (data) {
+					function lineGraph(seasons) {
+						document.getElementById("Line_Chart").innerHTML = "";
+						// Reading the data in the javascript enviroment.
+						d3.csv(dataPath)
+								.then(function (data) {
+									// Filtering data and removing all records with seasons not interested in.
+									data = data.filter(season => seasons.includes(season.Season));
 
-								//  Because we want to create a bar chart for the sum(fees) for every season
-								//  We need to use nest() to group data according to the season of the observation
-								var data_for_line= d3.nest()
-										.key(function (d) {
-											//  Specifying how we want to do the grouping
-											return d.League_to;
+									//  Because we want to create a bar chart for the sum(fees) for every season
+									//  We need to use nest() to group data according to the season of the observation
+									var data_for_line = d3.nest()
+											.key(function (d) {
+												//  Specifying how we want to do the grouping
+												return d.League_to;
+											})
+											.key(function (e) {
+												// Specifying the second grouping looking for.
+												return e.Position;
+											})
+											.rollup(function (leaves) {
+												//  Specifying what attribute to sum for the bar chart (Transfer_fee)
+												return d3.sum(leaves, function (d) {
+													//  Need to tranform numbers to int because they are strings now.
+													return parseInt(d.Transfer_fee)
+
+												})
+											})
+											.entries(data); // Specifying on what data to do the grouping
+
+									var domain_x = d3.nest()
+											.key(function (e) {
+												// Specifying the second grouping looking for.
+												return e.Position;
+											})
+											.rollup(function (leaves) {
+												//  Specifying what attribute to sum for the bar chart (Transfer_fee)
+												return d3.sum(leaves, function (d) {
+													//  Need to tranform numbers to int because they are strings now.
+													return parseInt(d.Transfer_fee)
+
+												})
+											})
+											.entries(data); // Specifying on what data to do the grouping
+
+									// Keep only top 5 leagues in data.
+									let league_interest = ["LaLiga", "Serie A", "Premier League", "Ligue 1", "1.Bundesliga"];
+
+									// Getting iterator index of the leagues interested in array frame.
+									var iterator_interest = new Array();
+									var i = 0;
+									data_for_line.forEach(function (d) {
+										if (league_interest.includes(d.key)) {
+											iterator_interest.push(i);
+										}
+										i = i + 1;
+									});
+
+									var final = new Array();
+									iterator_interest.forEach(function (iter) {
+										final.push(data_for_line[iter]);
+									});
+
+									/**
+									 * Function for compare to sort the array of objects using each objects key.
+									 * Code was found from https://www.sitepoint.com/sort-an-array-of-objects-in-javascript/
+									 * Using code from here to do the sorting.
+									 */
+									function compare(a, b) {
+										// Use toUpperCase() to ignore character casing
+										const keyA = a.key.toUpperCase();
+										const keyB = b.key.toUpperCase();
+
+										let comparison = 0;
+										if (keyA > keyB) {
+											comparison = 1;
+										} else if (keyA < keyB) {
+											comparison = -1;
+										}
+										return comparison;
+									}
+
+									// Sorting each object (each league) according to position of player.
+									final.forEach(function (d) {
+										d.values.sort(compare);
+
+									});
+
+
+									// X-AXIS creation and domain.
+									// Creating x axis scale and domain.
+									var positions = new Array()
+									domain_x.forEach(function (d) {
+										positions.push(d.key);
+									});
+
+									// Using scale point so lines are plotted more precisely.
+									var xScale = d3.scalePoint()
+											.range([50, width + 50]) // Start from 50 because dont want both axis to be stuck.
+											.domain(positions.sort());
+
+									// Y-AXIS creation and domain.
+									var transfer_per = new Array();
+									final.forEach(function (d) {
+										(d.values).forEach(function (e) {
+											transfer_per.push(e.value);
 										})
-										.key(function (e){
-											// Specifying the second grouping looking for.
-											return e.Position;
-										})
-										.rollup(function (leaves) {
-											//  Specifying what attribute to sum for the bar chart (Transfer_fee)
-											return d3.sum(leaves, function (d) {
-												//  Need to tranform numbers to int because they are strings now.
-												return parseInt(d.Transfer_fee)
+									});
+
+									// Getting the y axis creation and domain.
+									var y_ax = d3.extent(transfer_per, function (d) {
+										return parseInt(d);
+									});
+									var yScale = d3.scaleLinear()
+											.range([height, 0])
+											.domain(y_ax);
+
+
+									// Creation of svg element.
+									var svgLine = d3.select("#Line_Chart")
+											.append('svg')
+											.attr('class', 'LineSVG')
+											.attr('height', height + margin.top + margin.bottom)
+											.attr("width", width + margin.left + margin.right)
+											.style("margin-left", margin.left)
+											.append("g")
+											.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+									// to be able to use x axis to css
+									// and plotting
+									svgLine.append("g")
+											.attr("class", "x axis")
+											.attr("transform", "translate(0, " + height + ")")
+											.call(d3.axisBottom(xScale)) // Specifying x-axis to be on bottom.
+											.selectAll("text")
+											.style("text-anchor", "end") // labels the axis all below the line
+											.attr("dx", "-.8em")
+											.attr("dy", "-.55em")
+											.attr("transform", "rotate(-90)"); // rotates the labels to be vertical
+
+									// to be able to use y axis to css
+									// and plotting
+									svgLine.append("g")
+											.attr("class", "y axis")
+											.call(d3.axisLeft(yScale)) // Specifying y-axis to be on left.
+											.append("text")
+											.attr("transform", "rotate(-90)")
+											.attr("y", 6)
+											.attr("dy", ".71em")
+											.style("text-anchor", "end");
+
+
+									// Appending points for Laliga
+									svgLine.selectAll("liga-dots")
+											.data(final[0].values) // Data being used.
+											.enter()
+											.append("svg:circle")
+											.attr("class", "Laliga")
+											.attr("cx", function (d) {
+												return xScale(d.key);
+											})
+											.attr("cy", function (d) {
+												return yScale(parseInt(d.value))
+											})
+											.attr("r", 5)
+											.on("mouseover", function (d) {
+												d3.select('.LineSVG')
+														.append("text")
+														.attr("class", "tooltip")
+														.text("LaLiga spend : " + parseInt(d.value / 1000000) + "M on position : " + d.key)
+														.attr("x", xScale(d.key))
+														.attr("y",
+																yScale(parseInt(d.value)) + 70);
 
 											})
-										})
-										.entries(data); // Specifying on what data to do the grouping
+											.on("mouseout", function (d) {
+												d3.selectAll(".tooltip")
+														.remove();
+											});
 
-								var domain_x = d3.nest()
-										.key(function (e){
-											// Specifying the second grouping looking for.
-											return e.Position;
-										})
-										.rollup(function (leaves) {
-											//  Specifying what attribute to sum for the bar chart (Transfer_fee)
-											return d3.sum(leaves, function (d) {
-												//  Need to tranform numbers to int because they are strings now.
-												return parseInt(d.Transfer_fee)
+									// Appending points for Serie A league.
+									svgLine.selectAll("serie-dots")
+											.data(final[1].values) // Data being used.
+											.enter()
+											.append("circle")
+											.attr("class", "SerieA")
+											.attr("cx", function (d) {
+												return xScale(d.key);
+											})
+											.attr("cy", function (d) {
+												return yScale(parseInt(d.value))
+											})
+											.attr("r", 5)
+											.on("mouseover", function (d) {
+												d3.select('.LineSVG')
+														.append("text")
+														.attr("class", "tooltip")
+														.text("Serie A spend : " + parseInt(d.value / 1000000) + "M on position : " + d.key)
+														.attr("x", xScale(d.key))
+														.attr("y",
+																yScale(parseInt(d.value)) + 70);
 
 											})
-										})
-										.entries(data); // Specifying on what data to do the grouping
+											.on("mouseout", function (d) {
+												d3.selectAll(".tooltip")
+														.remove();
+											});
 
-								// Keep only top 5 leagues in data.
-								let league_interest = ["LaLiga", "Serie A", "Premier League", "Ligue 1", "1.Bundesliga"];
 
-								// Getting iterator index of the leagues interested in array frame.
-								var iterator_interest = new Array();
-								var i = 0;
-								data_for_line.forEach(function(d){
-									if (league_interest.includes(d.key)){
-										iterator_interest.push(i);
-									}
-									i = i + 1;
+									// Appending points for Ligue 1 league.
+									svgLine.selectAll("ligue-dots")
+											.data(final[2].values) // Data being used.
+											.enter()
+											.append("circle")
+											.attr("class", "Ligue1")
+											.attr("cx", function (d) {
+												return xScale(d.key);
+											})
+											.attr("cy", function (d) {
+												return yScale(parseInt(d.value))
+											})
+											.attr("r", 5)
+											.on("mouseover", function (d) {
+												d3.select('.LineSVG')
+														.append("text")
+														.attr("class", "tooltip")
+														.text("Ligue 1 spend : " + parseInt(d.value / 1000000) + "M on position : " + d.key)
+														.attr("x", xScale(d.key))
+														.attr("y", yScale(parseInt(d.value)) + 70);
+
+											})
+											.on("mouseout", function (d) {
+												d3.selectAll(".tooltip")
+														.remove();
+											});
+
+									// Appending points for Premier league.
+									svgLine.selectAll("premier-dot")
+											.data(final[3].values) // Data being used.
+											.enter()
+											.append("circle")
+											.attr("class", "Premier")
+											.attr("cx", function (d) {
+												return xScale(d.key);
+											})
+											.attr("cy", function (d) {
+												return yScale(parseInt(d.value))
+											})
+											.attr("r", 5)
+											.on("mouseover", function (d) {
+												d3.select('.LineSVG')
+														.append("text")
+														.attr("class", "tooltip")
+														.text("Premier League spend : " + parseInt(d.value / 1000000) + "M on position : " + d.key)
+														.attr("x", xScale(d.key))
+														.attr("y", yScale(parseInt(d.value)) + 70);
+
+											})
+											.on("mouseout", function (d) {
+												d3.selectAll(".tooltip")
+														.remove();
+											});
+
+									// Appending points for Bundesliga.
+									svgLine.selectAll("bundes-dot")
+											.data(final[4].values) // Data being used.
+											.enter()
+											.append("circle")
+											.attr("class", "Bundesliga")
+											.attr("cx", function (d) {
+												return xScale(d.key);
+											})
+											.attr("cy", function (d) {
+												return yScale(parseInt(d.value))
+											})
+											.attr("r", 5)
+											.on("mouseover", function (d) {
+												d3.select('.LineSVG')
+														.append("text")
+														.attr("class", "tooltip")
+														.text("Bundesliga spend : " + parseInt(d.value / 1000000) + "M on position : " + d.key)
+														.attr("x", xScale(d.key))
+														.attr("y", yScale(parseInt(d.value)) + 70);
+
+											})
+											.on("mouseout", function (d) {
+												d3.selectAll(".tooltip")
+														.remove();
+											});
 								});
-
-								var final = new Array();
-								iterator_interest.forEach(function (iter){
-									final.push(data_for_line[iter]);
-								});
-
-								/**
-								 * Function for compare to sort the array of objects using each objects key.
-								 * Code was found from https://www.sitepoint.com/sort-an-array-of-objects-in-javascript/
-								 * Using code from here to do the sorting.
-								 */
-								function compare(a, b) {
-									// Use toUpperCase() to ignore character casing
-									const keyA = a.key.toUpperCase();
-									const keyB = b.key.toUpperCase();
-
-									let comparison = 0;
-									if (keyA > keyB) {
-										comparison = 1;
-									} else if (keyA < keyB) {
-										comparison = -1;
-									}
-									return comparison;
-								}
-
-								// Sorting each object (each league) according to position of player.
-								final.forEach(function(d) {
-									d.values.sort(compare);
-									console.log(d.values);
-								});
-
-
-								// X-AXIS creation and domain.
-								// Creating x axis scale and domain.
-								var positions = new Array()
-								domain_x.forEach(function (d) {
-									positions.push(d.key);
-								});
-
-								// Using scale point so lines are plotted more precisely.
-								var xScale = d3.scalePoint()
-										.range([50, width+50]) // Start from 50 because dont want both axis to be stuck.
-										.domain(positions.sort());
-
-								// Y-AXIS creation and domain.
-								var transfer_per = new Array();
-								final.forEach(function(d){
-									(d.values).forEach(function(e){transfer_per.push(e.value);})
-								});
-
-								// Getting the y axis creation and domain.
-								var y_ax = d3.extent(transfer_per, function(d){return parseInt(d);});
-								var yScale = d3.scaleLinear()
-										.range([height, 0])
-										.domain(y_ax);
-
-
-
-
-								// Creation of svg element.
-								var svgLine = d3.select("#Line_Chart")
-										.append('svg')
-										.attr('class', 'LineSVG')
-										.attr('height', height + margin.top + margin.bottom)
-										.attr("width", width + margin.left + margin.right)
-										.style("margin-left", margin.left)
-										.append("g")
-										.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-								// to be able to use x axis to css
-								// and plotting
-								svgLine.append("g")
-										.attr("class", "x axis")
-										.attr("transform", "translate(0, " + height + ")")
-										.call(d3.axisBottom(xScale)) // Specifying x-axis to be on bottom.
-										.selectAll("text")
-										.style("text-anchor", "end") // labels the axis all below the line
-										.attr("dx", "-.8em")
-										.attr("dy", "-.55em")
-										.attr("transform", "rotate(-90)"); // rotates the labels to be vertical
-
-								// to be able to use y axis to css
-								// and plotting
-								svgLine.append("g")
-										.attr("class", "y axis")
-										.call(d3.axisLeft(yScale)) // Specifying y-axis to be on left.
-										.append("text")
-										.attr("transform", "rotate(-90)")
-										.attr("y", 6)
-										.attr("dy", ".71em")
-										.style("text-anchor", "end");
-
-
-								console.log(final);
-
-
-								// Appending points for Laliga
-								svgLine.selectAll("liga-dots")
-										.data(final[0].values) // Data being used.
-										.enter()
-										.append("svg:circle")
-										.attr("class", "Laliga")
-										.attr("cx", function(d){
-											return xScale(d.key);
-										})
-										.attr("cy", function(d){
-											return yScale(parseInt(d.value))
-										})
-										.attr("r", 5)
-										.on("mouseover",function(d) {
-											d3.select('.LineSVG')
-													.append("text")
-													.attr("class", "tooltip")
-													.text("LaLiga spend : " + parseInt(d.value/1000000) +  "M on position : " + d.key)
-													.attr("x", xScale(d.key))
-													.attr("y",
-															yScale(parseInt(d.value)) + 70);
-
-										})
-										.on("mouseout",function(d){
-											d3.selectAll(".tooltip")
-													.remove();
-										});
-
-								// Appending points for Serie A league.
-								svgLine.selectAll("serie-dots")
-										.data(final[1].values) // Data being used.
-										.enter()
-										.append("circle")
-										.attr("class", "SerieA")
-										.attr("cx", function (d) {
-											return xScale(d.key);
-										})
-										.attr("cy", function (d) {
-											return yScale(parseInt(d.value))
-										})
-										.attr("r", 5)
-										.on("mouseover",function(d) {
-											d3.select('.LineSVG')
-													.append("text")
-													.attr("class", "tooltip")
-													.text("Serie A spend : " + parseInt(d.value/1000000) +  "M on position : " + d.key)
-													.attr("x", xScale(d.key))
-													.attr("y",
-															yScale(parseInt(d.value)) + 70);
-
-										})
-										.on("mouseout",function(d){
-											d3.selectAll(".tooltip")
-													.remove();
-										});
-
-
-								// Appending points for Ligue 1 league.
-								svgLine.selectAll("ligue-dots")
-										.data(final[2].values) // Data being used.
-										.enter()
-										.append("circle")
-										.attr("class", "Ligue1")
-										.attr("cx", function (d) {
-											return xScale(d.key);
-										})
-										.attr("cy", function (d) {
-											return yScale(parseInt(d.value))
-										})
-										.attr("r", 5)
-										.on("mouseover",function(d) {
-											d3.select('.LineSVG')
-													.append("text")
-													.attr("class", "tooltip")
-													.text("Ligue 1 spend : " + parseInt(d.value/1000000) +  "M on position : " + d.key)
-													.attr("x", xScale(d.key))
-													.attr("y", yScale(parseInt(d.value)) + 70 );
-
-										})
-										.on("mouseout",function(d){
-											d3.selectAll(".tooltip")
-													.remove();
-										});
-
-								// Appending points for Premier league.
-								svgLine.selectAll("premier-dot")
-										.data(final[3].values) // Data being used.
-										.enter()
-										.append("circle")
-										.attr("class", "Premier")
-										.attr("cx", function (d) {
-											return xScale(d.key);
-										})
-										.attr("cy", function (d) {
-											return yScale(parseInt(d.value))
-										})
-										.attr("r", 5)
-										.on("mouseover",function(d) {
-											d3.select('.LineSVG')
-													.append("text")
-													.attr("class", "tooltip")
-													.text("Premier League spend : " + parseInt(d.value/1000000) +  "M on position : " + d.key)
-													.attr("x", xScale(d.key))
-													.attr("y", yScale(parseInt(d.value)) + 70);
-
-										})
-										.on("mouseout",function(d){
-											d3.selectAll(".tooltip")
-													.remove();
-										});
-
-								// Appending points for Bundesliga.
-								svgLine.selectAll("bundes-dot")
-										.data(final[4].values) // Data being used.
-										.enter()
-										.append("circle")
-										.attr("class", "Bundesliga")
-										.attr("cx", function (d) {
-											return xScale(d.key);
-										})
-										.attr("cy", function (d) {
-											return yScale(parseInt(d.value))
-										})
-										.attr("r", 5)
-										.on("mouseover",function(d) {
-											d3.select('.LineSVG')
-													.append("text")
-													.attr("class", "tooltip")
-													.text("Bundesliga spend : " + parseInt(d.value/1000000) +  "M on position : " + d.key)
-													.attr("x", xScale(d.key))
-													.attr("y", yScale(parseInt(d.value)) +70 );
-
-										})
-										.on("mouseout",function(d){
-											d3.selectAll(".tooltip")
-													.remove();
-										});
-							});
+					}
 
 				</script>
 
