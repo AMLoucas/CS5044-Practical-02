@@ -11,36 +11,43 @@
 
 	<style>
 
-		.axis path,
-		.axis line {
-			fill: none;
-			stroke: #000;
-			shape-rendering: crispEdges;
-		}
+
+
 
 		.Laliga {
-			fill: none;
 			stroke: red;
+			stroke-width: 0.5px;
+			fill: red;
+			opacity: 0.75;
+
 		}
 
 		.Premier {
-			fill:none;
-			stroke:blue;
+			stroke: blue;
+			stroke-width: 0.5px;
+			fill: blue;
+			opacity: 0.75;
 		}
 
 		.Bundesliga {
-			fill: none;
 			stroke: green;
+			stroke-width: 0.5px;
+			fill: green;
+			opacity: 0.75;
 		}
 
 		.SerieA {
-			fill: none;
 			stroke: black;
+			stroke-width: 0.5px;
+			fill: black;
+			opacity: 0.75;
 		}
 
 		.Ligue1 {
-			fill: none;
-			stroke: darkmagenta;
+			stroke: orange;
+			stroke-width: 0.5px;
+			fill: orange;
+			opacity: 0.75;
 		}
 	</style>
 
@@ -320,16 +327,18 @@
 
 
 					// Creation of svg element.
-					var svg = d3.select("#Line_Chart")
+					var svgLine = d3.select("#Line_Chart")
 							.append('svg')
+							.attr('class', 'LineSVG')
 							.attr('height', height + margin.top + margin.bottom)
 							.attr("width", width + margin.left + margin.right)
+							.style("margin-left", margin.left)
 							.append("g")
 							.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 					// to be able to use x axis to css
 					// and plotting
-					svg.append("g")
+					svgLine.append("g")
 							.attr("class", "x axis")
 							.attr("transform", "translate(0, " + height + ")")
 							.call(d3.axisBottom(xScale)) // Specifying x-axis to be on bottom.
@@ -341,7 +350,7 @@
 
 					// to be able to use y axis to css
 					// and plotting
-					svg.append("g")
+					svgLine.append("g")
 							.attr("class", "y axis")
 							.call(d3.axisLeft(yScale)) // Specifying y-axis to be on left.
 							.append("text")
@@ -350,53 +359,148 @@
 							.attr("dy", ".71em")
 							.style("text-anchor", "end");
 
-					// Creating the line generator.
-					var lineGenerator = d3.line()
-							.x(function(d){
-								return (xScale(d.key));
-							})
-							.y(function(d){
-								return yScale(parseInt(d.value));
-							});
-
 
 					console.log(final);
 
 
-					// Creating the lines in graphs.
-					svg.append("path")
-							.datum(final[0].values) // Data being used.
+					// Appending points for Laliga
+					svgLine.selectAll("liga-dots")
+							.data(final[0].values) // Data being used.
+							.enter()
+							.append("svg:circle")
 							.attr("class", "Laliga")
-							.attr("d", lineGenerator);
+							.attr("cx", function(d){
+								return xScale(d.key);
+							})
+							.attr("cy", function(d){
+								return yScale(parseInt(d.value))
+							})
+							.attr("r", 5)
+							.on("mouseover",function(d) {
+								d3.select('.LineSVG')
+										.append("text")
+										.attr("class", "tooltip")
+										.text("LaLiga spend : " + parseInt(d.value/1000000) +  "M on position : " + d.key)
+										.attr("x", xScale(d.key))
+										.attr("y",
+												yScale(parseInt(d.value)) + 70);
 
-					// Creating the lines in graphs.
-					svg.append("path")
-							.datum(final[1].values) // Data being used.
-							.attr("class", "SerieA")
-							.attr("d", lineGenerator);
+								})
+								.on("mouseout",function(d){
+									d3.selectAll(".tooltip")
+											.remove();
+								});
 
-					// Creating the lines in graphs.
-					svg.append("path")
-							.datum(final[2].values) // Data being used.
-							.attr("class", "Ligue1")
-							.attr("d", lineGenerator);
+								// Appending points for Serie A league.
+								svgLine.selectAll("serie-dots")
+										.data(final[1].values) // Data being used.
+										.enter()
+										.append("circle")
+										.attr("class", "SerieA")
+										.attr("cx", function (d) {
+											return xScale(d.key);
+										})
+										.attr("cy", function (d) {
+											return yScale(parseInt(d.value))
+										})
+										.attr("r", 5)
+										.on("mouseover",function(d) {
+											d3.select('.LineSVG')
+													.append("text")
+													.attr("class", "tooltip")
+													.text("Serie A spend : " + parseInt(d.value/1000000) +  "M on position : " + d.key)
+													.attr("x", xScale(d.key))
+													.attr("y",
+															yScale(parseInt(d.value)) + 70);
 
-					// Creating the lines in graphs.
-					svg.append("path")
-							.datum(final[3].values) // Data being used.
-							.attr("class", "Premier")
-							.attr("d", lineGenerator);
-
-					// Creating the lines in graphs.
-					svg.append("path")
-							.datum(final[4].values) // Data being used.
-							.attr("class", "Bundesliga")
-							.attr("d", lineGenerator);
+										})
+										.on("mouseout",function(d){
+											d3.selectAll(".tooltip")
+													.remove();
+										});
 
 
+								// Appending points for Ligue 1 league.
+								svgLine.selectAll("ligue-dots")
+										.data(final[2].values) // Data being used.
+										.enter()
+										.append("circle")
+										.attr("class", "Ligue1")
+										.attr("cx", function (d) {
+											return xScale(d.key);
+										})
+										.attr("cy", function (d) {
+											return yScale(parseInt(d.value))
+										})
+										.attr("r", 5)
+										.on("mouseover",function(d) {
+											d3.select('.LineSVG')
+													.append("text")
+													.attr("class", "tooltip")
+													.text("Ligue 1 spend : " + parseInt(d.value/1000000) +  "M on position : " + d.key)
+													.attr("x", xScale(d.key))
+													.attr("y", yScale(parseInt(d.value)) + 70 );
 
+										})
+										.on("mouseout",function(d){
+											d3.selectAll(".tooltip")
+													.remove();
+										});
 
-				});
+								// Appending points for Premier league.
+								svgLine.selectAll("premier-dot")
+										.data(final[3].values) // Data being used.
+										.enter()
+										.append("circle")
+										.attr("class", "Premier")
+										.attr("cx", function (d) {
+											return xScale(d.key);
+										})
+										.attr("cy", function (d) {
+											return yScale(parseInt(d.value))
+										})
+										.attr("r", 5)
+										.on("mouseover",function(d) {
+											d3.select('.LineSVG')
+													.append("text")
+													.attr("class", "tooltip")
+													.text("Premier League spend : " + parseInt(d.value/1000000) +  "M on position : " + d.key)
+													.attr("x", xScale(d.key))
+													.attr("y", yScale(parseInt(d.value)) + 70);
+
+										})
+										.on("mouseout",function(d){
+											d3.selectAll(".tooltip")
+													.remove();
+										});
+
+								// Appending points for Bundesliga.
+								svgLine.selectAll("bundes-dot")
+										.data(final[4].values) // Data being used.
+										.enter()
+										.append("circle")
+										.attr("class", "Bundesliga")
+										.attr("cx", function (d) {
+											return xScale(d.key);
+										})
+										.attr("cy", function (d) {
+											return yScale(parseInt(d.value))
+										})
+										.attr("r", 5)
+										.on("mouseover",function(d) {
+											d3.select('.LineSVG')
+													.append("text")
+													.attr("class", "tooltip")
+													.text("Bundesliga spend : " + parseInt(d.value/1000000) +  "M on position : " + d.key)
+													.attr("x", xScale(d.key))
+													.attr("y", yScale(parseInt(d.value)) +70 );
+
+										})
+										.on("mouseout",function(d){
+											d3.selectAll(".tooltip")
+													.remove();
+										});
+							});
 
 	</script>
 	<!-- Line graph of different leagues will appear -->
