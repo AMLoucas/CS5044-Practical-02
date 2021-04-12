@@ -39,7 +39,7 @@
 
 
 
-		.Laliga {
+		circle[name^="LaLiga"] {
 			stroke: red;
 			stroke-width: 0.5px;
 			fill: red;
@@ -47,28 +47,28 @@
 
 		}
 
-		.Premier {
+		circle[name^="Premier"] {
 			stroke: blue;
 			stroke-width: 0.5px;
 			fill: blue;
 			opacity: 0.75;
 		}
 
-		.Bundesliga {
-			stroke: green;
-			stroke-width: 0.5px;
-			fill: green;
-			opacity: 0.75;
-		}
-
-		.SerieA {
+		circle[name^="1.Bunde"] {
 			stroke: black;
 			stroke-width: 0.5px;
 			fill: black;
 			opacity: 0.75;
 		}
 
-		.Ligue1 {
+		circle[name^="Serie A"] {
+			stroke: green;
+			stroke-width: 0.5px;
+			fill: green;
+			opacity: 0.75;
+		}
+
+		circle[name^="Ligue"] {
 			stroke: orange;
 			stroke-width: 0.5px;
 			fill: orange;
@@ -404,7 +404,7 @@
 
 									// Using scale point so lines are plotted more precisely.
 									var xScale = d3.scalePoint()
-											.range([10, width + 10]) // Start from 50 because dont want both axis to be stuck.
+											.range([10, width]) // Start from 50 because dont want both axis to be stuck.
 											.domain(positions.sort());
 
 									// Y-AXIS creation and domain.
@@ -441,10 +441,10 @@
 											.attr("transform", "translate(0, " + height + ")")
 											.call(d3.axisBottom(xScale)) // Specifying x-axis to be on bottom.
 											.selectAll("text")
-											.style("text-anchor", "end") // labels the axis all below the line
 											.attr("dx", "-.8em")
 											.attr("dy", "-.55em")
-											.attr("transform", "rotate(-90)"); // rotates the labels to be vertical
+											.attr("transform", "translate(5, 0)rotate(-45)")
+											.style("text-anchor", "end");
 
 									// to be able to use y axis to css
 									// and plotting
@@ -457,144 +457,48 @@
 											.attr("dy", ".71em")
 											.style("text-anchor", "end");
 
-
-									// Appending points for Laliga
-									svgLine.selectAll("liga-dots")
-											.data(final[0].values) // Data being used.
-											.enter()
-											.append("svg:circle")
-											.attr("class", "Laliga")
-											.attr("cx", function (d) {
-												return xScale(d.key);
-											})
-											.attr("cy", function (d) {
-												return yScale(parseInt(d.value))
-											})
-											.attr("r", 5)
-											.on("mouseover", function (d) {
-												d3.select('.LineSVG')
-														.append("text")
-														.attr("class", "tooltip")
-														.text("LaLiga spend : " + parseInt(d.value / 1000000) + "M on position : " + d.key)
-														.attr("x", xScale(d.key))
-														.attr("y",
-																yScale(parseInt(d.value)) + 70);
-
-											})
-											.on("mouseout", function (d) {
-												d3.selectAll(".tooltip")
-														.remove();
-											});
-
-									// Appending points for Serie A league.
-									svgLine.selectAll("serie-dots")
-											.data(final[1].values) // Data being used.
-											.enter()
-											.append("circle")
-											.attr("class", "SerieA")
-											.attr("cx", function (d) {
-												return xScale(d.key);
-											})
-											.attr("cy", function (d) {
-												return yScale(parseInt(d.value))
-											})
-											.attr("r", 5)
-											.on("mouseover", function (d) {
-												d3.select('.LineSVG')
-														.append("text")
-														.attr("class", "tooltip")
-														.text("Serie A spend : " + parseInt(d.value / 1000000) + "M on position : " + d.key)
-														.attr("x", xScale(d.key))
-														.attr("y",
-																yScale(parseInt(d.value)) + 70);
-
-											})
-											.on("mouseout", function (d) {
-												d3.selectAll(".tooltip")
-														.remove();
-											});
+									// Sort the array of objects to user for loop for each group of scatter
+									// Must be same as league_Selected so it works good.
+									league_Selected.sort();
+									final.sort(compare);
 
 
-									// Appending points for Ligue 1 league.
-									svgLine.selectAll("ligue-dots")
-											.data(final[2].values) // Data being used.
-											.enter()
-											.append("circle")
-											.attr("class", "Ligue1")
-											.attr("cx", function (d) {
-												return xScale(d.key);
-											})
-											.attr("cy", function (d) {
-												return yScale(parseInt(d.value))
-											})
-											.attr("r", 5)
-											.on("mouseover", function (d) {
-												d3.select('.LineSVG')
-														.append("text")
-														.attr("class", "tooltip")
-														.text("Ligue 1 spend : " + parseInt(d.value / 1000000) + "M on position : " + d.key)
-														.attr("x", xScale(d.key))
-														.attr("y", yScale(parseInt(d.value)) + 70);
+									for (var scatterGroup = 0; scatterGroup < league_Selected.length; scatterGroup++) {
+										// Appending points for Laliga
+										var selector = "scatter"+scatterGroup;
 
-											})
-											.on("mouseout", function (d) {
-												d3.selectAll(".tooltip")
-														.remove();
-											});
+										// Assign team in object for mouseover.
+										// Code for this line was found: https://stackoverflow.com/questions/53098658/modify-object-values-in-an-array-of-objects
+										var DrawResult = (final[scatterGroup].values).map(result => Object.assign({}, result, { league: league_Selected[scatterGroup] }));
+										console.log(DrawResult);
 
-									// Appending points for Premier league.
-									svgLine.selectAll("premier-dot")
-											.data(final[3].values) // Data being used.
-											.enter()
-											.append("circle")
-											.attr("class", "Premier")
-											.attr("cx", function (d) {
-												return xScale(d.key);
-											})
-											.attr("cy", function (d) {
-												return yScale(parseInt(d.value))
-											})
-											.attr("r", 5)
-											.on("mouseover", function (d) {
-												d3.select('.LineSVG')
-														.append("text")
-														.attr("class", "tooltip")
-														.text("Premier League spend : " + parseInt(d.value / 1000000) + "M on position : " + d.key)
-														.attr("x", xScale(d.key))
-														.attr("y", yScale(parseInt(d.value)) + 70);
+										svgLine.selectAll(selector)
+												.data(DrawResult) // Use data with the new assigned league.
+												.enter()
+												.append("circle")
+												.attr("name", league_Selected[scatterGroup]) // To inedx circles for each league to modify.
+												.attr("cx", function (d) {
+													return xScale(d.key);
+												})
+												.attr("cy", function (d) {
+													return yScale(parseInt(d.value))
+												})
+												.attr("r", 5)
+												.on("mouseover", function (d) {
+													d3.select('.LineSVG')
+															.append("text")
+															.attr("class", "tooltip")
+															.text(d.league + " spend : " + parseInt(d.value / 1000000) + "M \n on position : " + d.key)
+															.attr("x", xScale(d.key))
+															.attr("y",
+																	yScale(parseInt(d.value)) + 70);
 
-											})
-											.on("mouseout", function (d) {
-												d3.selectAll(".tooltip")
-														.remove();
-											});
-
-									// Appending points for Bundesliga.
-									svgLine.selectAll("bundes-dot")
-											.data(final[4].values) // Data being used.
-											.enter()
-											.append("circle")
-											.attr("class", "Bundesliga")
-											.attr("cx", function (d) {
-												return xScale(d.key);
-											})
-											.attr("cy", function (d) {
-												return yScale(parseInt(d.value))
-											})
-											.attr("r", 5)
-											.on("mouseover", function (d) {
-												d3.select('.LineSVG')
-														.append("text")
-														.attr("class", "tooltip")
-														.text("Bundesliga spend : " + parseInt(d.value / 1000000) + "M on position : " + d.key)
-														.attr("x", xScale(d.key))
-														.attr("y", yScale(parseInt(d.value)) + 70);
-
-											})
-											.on("mouseout", function (d) {
-												d3.selectAll(".tooltip")
-														.remove();
-											});
+												})
+												.on("mouseout", function (d) {
+													d3.selectAll(".tooltip")
+															.remove();
+												});
+									}
 					}
 
 				</script>
