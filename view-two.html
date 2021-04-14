@@ -22,10 +22,12 @@
             height: 300px; /* Should be removed. Only for demonstration */
         }
 
+        /* This is the filter column */
         .left {
             width: 15%;
         }
 
+        /* Plot columns. Middle = BarGraph, Right = Scatter */
         .middle, .right {
             width: 35%;
         }
@@ -37,8 +39,23 @@
             clear: both;
         }
 
+        /* Style for mouse over effect in scatter */
+        div.tooltip {
+            position: absolute;
+            text-align: center;
+            width: 15%;
+            height: 8%;
+            padding: 5px;
+            font: 14px sans-serif;
+            background: lightsteelblue;
+            border: 1px;
+            border-radius: 8px;
+            pointer-events: none;
+        }
 
 
+        /* To give different colours to the data points in scatter. */
+        /* Each league to have a unique scatter plot */
         circle[name^="LaLiga"] {
             stroke: red;
             stroke-width: 0.5px;
@@ -74,6 +91,7 @@
             fill: orange;
             opacity: 0.75;
         }
+
     </style>
 
 </head>
@@ -94,7 +112,7 @@
     <!-- Checkbox list, so user chooses what seasons the data will be showing. -->
     <div class="column left">
         <!-- checkboxes for the season filtering -->
-        <h3>Seasons interested:</h3>
+        <h3>Choose Season(s):</h3>
         <form id="Range-Seasons">
             <input type="checkbox" id="season1" class="season-box" value="2000-2001" onchange="cleanDataToDraw()" checked>
             <label for="season1"> 2000-2001</label><br>
@@ -138,7 +156,7 @@
         </form>
 
         <!-- Checkboxes for Football League filtering -->
-        <h3>Leagues interested in:</h3>
+        <h3>Choose League(s):</h3>
         <form id="league-range">
             <input type="checkbox" id="league1" value="Premier League" onchange="cleanDataToDraw()" checked>
             <label for="league1">Premier League</label><br>
@@ -462,6 +480,11 @@
                     league_Selected.sort();
                     final.sort(compare);
 
+                    // Define the div for the tooltip
+                    var div = d3.select("body").append("div")
+                            .attr("class", "tooltip")
+                            .style("opacity", 0);
+
 
                     for (var scatterGroup = 0; scatterGroup < league_Selected.length; scatterGroup++) {
                         // Appending points for Laliga
@@ -484,22 +507,23 @@
                                 return yScale(parseInt(d.value))
                             })
                             .attr("r", 5)
-                            .on("mouseover", function (d) {
-                                d3.select('.LineSVG')
-                                    .append("text")
-                                    .attr("class", "tooltip")
-                                    .text(d.league + " spend : " + parseInt(d.value / 1000000) + "M \n on position : " + d.key)
-                                    .attr("x", xScale(d.key))
-                                    .attr("y",
-                                        yScale(parseInt(d.value)) + 70);
-
-                            })
-                            .on("mouseout", function (d) {
-                                d3.selectAll(".tooltip")
-                                    .remove();
-                            });
+                                .on("mouseover", function(d) {
+                                    div.transition()
+                                            .duration(200)
+                                            .style("opacity", .9);
+                                    div.html(d.league + "<br/>" + "Transer Fees spend: "  + parseInt(d.value / 1000000) + "M <br/>" + "On position: " + d.key)
+                                            .style("left", (d3.event.pageX + 10) + "px")
+                                            .style("top", (d3.event.pageY - 35) + "px");
+                                })
+                                .on("mouseout", function(d) {
+                                    div.transition()
+                                            .duration(500)
+                                            .style("opacity", 0);
+                                });
                     }
                 }
+
+
 
             </script>
 
