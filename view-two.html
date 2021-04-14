@@ -387,9 +387,15 @@
                             .style("text-anchor", "END")
                             .style("font-size", "1em")
                             .text("SEASON");
-                    /**
-                     * STILL NEED TO PUT GOOD LABELS ON AXIS AND TITLE TO BE MORE FRIENDLY
-                     **/
+
+                    svg.append("text")
+                            .attr("class", "title")
+                            .attr("x", (width / 2))
+                            .attr("y", 0 - (margin.top / 2))
+                            .attr("text-anchor", "middle")
+                            .style("font-size", "20px")
+                            .text("TRANSFER FEES SPEND(€) BY SEASON");
+
 
                             // Define the div for the tooltip
                     var div = d3.select("#Bar_Chart").append("div")
@@ -432,11 +438,11 @@
 
     <div class="column right">
         <!-- Line graph of different leagues will appear -->
-        <div id="Line_Chart" style="width: 100%; height: 100%;">
+        <div id="Scatter_Chart" style="width: 100%; height: 100%;">
 
             <script>
                 function drawLineGraph(data_for_line, domain_x, league_Selected) {
-                    document.getElementById("Line_Chart").innerHTML = "";
+                    document.getElementById("Scatter_Chart").innerHTML = "";
                     // Reading the data in the javascript enviroment.
 
                     // Getting iterator index of the leagues interested in array frame.
@@ -510,7 +516,7 @@
 
 
                     // Creation of svg element.
-                    var svgLine = d3.select("#Line_Chart")
+                    var scatterLine = d3.select("#Scatter_Chart")
                         .append('svg')
                         .attr('class', 'LineSVG')
                         .attr('height', height + margin.top + margin.bottom)
@@ -521,7 +527,7 @@
 
                     // to be able to use x axis to css
                     // and plotting
-                    svgLine.append("g")
+                    scatterLine.append("g")
                         .attr("class", "x axis")
                         .attr("transform", "translate(0, " + height + ")")
                         .call(d3.axisBottom(xScale)) // Specifying x-axis to be on bottom.
@@ -532,7 +538,7 @@
                         .style("text-anchor", "end");
 
                     // ADDING TITLE ON X-AXIS.
-                    svgLine.append("text")
+                    scatterLine.append("text")
                             .attr("transform",
                                     "translate(" + (width/2) + " ," +
                                     (height + margin.top ) + ")")
@@ -545,17 +551,25 @@
 
                     // to be able to use y axis to css
                     // and plotting
-                    svgLine.append("g")
+                    scatterLine.append("g")
                         .attr("class", "y axis")
                         .call(d3.axisLeft(yScale)); // Specifying y-axis to be on left.
 
                     //ADDING TITLE ON Y-AXIS
-                    svgLine.append("text")
+                    scatterLine.append("text")
                             .attr("y", -5)
                             .attr("x", +5)
                             .style("text-anchor", "middle")
                             .style("font-size", "1em")
                             .text("TRANSFER FEE'S (€)");
+
+                    scatterLine.append("text")
+                            .attr("class", "title")
+                            .attr("x", (width / 2))
+                            .attr("y", 0 - (margin.top / 2))
+                            .attr("text-anchor", "middle")
+                            .style("font-size", "20px")
+                            .text("TRANSFER FEES SPEND(€) BY LEAGUE & POSITION");
 
                     // Sort the array of objects to user for loop for each group of scatter
                     // Must be same as league_Selected so it works good.
@@ -563,7 +577,7 @@
                     final.sort(compare);
 
                     // Define the div for the tooltip
-                    var div = d3.select("#Line_Chart").append("div")
+                    var div = d3.select("#Scatter_Chart").append("div")
                             .attr("class", "tooltipScatter")
                             .style("opacity", 0);
 
@@ -577,7 +591,7 @@
                         var DrawResult = (final[scatterGroup].values).map(result => Object.assign({}, result, { league: league_Selected[scatterGroup] }));
                         console.log(DrawResult);
 
-                        svgLine.selectAll(selector)
+                        scatterLine.selectAll(selector)
                             .data(DrawResult) // Use data with the new assigned league.
                             .enter()
                             .append("circle")
