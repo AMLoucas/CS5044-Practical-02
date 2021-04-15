@@ -111,6 +111,71 @@
 		opacity: 0.75;
 	}
 
+	/* To colour the circles in the line graphs */
+	circle[name^="LaLiga"] {
+		stroke: black;
+		stroke-width: 1.5px;
+		fill: red;
+		opacity: 0.75;
+
+	}
+
+	circle[name^="Premier"] {
+		stroke: black;
+		stroke-width: 1.5px;
+		fill: blue;
+		opacity: 0.75;
+	}
+
+	circle[name^="1.Bunde"] {
+		stroke: black;
+		stroke-width: 1.5px;
+		fill: black;
+		opacity: 0.75;
+	}
+
+	circle[name^="Serie A"] {
+		stroke: black;
+		stroke-width: 1.5px;
+		fill: green;
+		opacity: 0.75;
+	}
+
+	circle[name^="Ligue"] {
+		stroke: black;
+		stroke-width: 1.5px;
+		fill: orange;
+		opacity: 0.75;
+	}
+
+	div.tooltipLolli {
+		position: absolute;
+		text-align: center;
+		width: 15%;
+		height: 5%;
+		padding: 5px;
+		font: 14px sans-serif;
+		background: lightsteelblue;
+		border: 1px;
+		border-radius: 8px;
+		pointer-events: none;
+
+	}
+
+	div.tooltipLine {
+		position: absolute;
+		text-align: center;
+		width: 15%;
+		height: 8%;
+		padding: 5px;
+		font: 14px sans-serif;
+		background: lightsteelblue;
+		border: 1px;
+		border-radius: 8px;
+		pointer-events: none;
+
+	}
+
 
 </style>
 
@@ -292,9 +357,10 @@
         });
 
         // Using scale point so lines are plotted more precisely.
-        var xScale = d3.scalePoint()
-            .range([10, width + 10]) // Start from 10 because want small separation of axis.
-            .domain(seasons.sort());
+        var xScale = d3.scaleBand()
+            .range([0, width]) // Start from 10 because want small separation of axis.
+            .domain(seasons.sort())
+			.padding(1); // To have dots in band center
 
 
         /**
@@ -391,6 +457,11 @@
 		 * Function will be in charge of creating the appropriate line for each league.
          */
 
+       // Define the div for the tooltip to show mouse-over
+        var div = d3.select("#line_graph").append("div")
+                .attr("class", "tooltipLine")
+                .style("opacity", 0);
+
         for (var pointer = 0; pointer < dataFor_Line.length; pointer++) {
 
             // Add the line
@@ -402,7 +473,38 @@
                 .attr("d", d3.line()
                     .x(function(d) { return xScale(d.key) })
                     .y(function(d) { return yScale(d.value) })
-                )
+                );
+
+            // Capturing data to append appropriate colour in circles.
+			var loop_league = dataFor_Line[pointer].key;
+            var data_for_circle = (dataFor_Line[pointer].values).map(result => Object.assign({}, result, {league: loop_league}));
+
+            // Printing data to see if done correctly
+            console.log(data_for_circle);
+
+
+            // Circles
+            line_Graph.selectAll("circle_dot")
+                .data(data_for_circle)
+                .enter()
+                .append("circle")
+				.attr("name", function(d) {return d.league})
+                .attr("cx", function(d) { return xScale(d.key); })
+                .attr("cy", function(d) { return yScale(d.value); })
+                .attr("r", "4")
+                .on("mouseover", function(d) { // Adding mouseover effect to have details on demand.
+                    div.transition()
+                        .duration(200)
+                        .style("opacity", .9);
+                    div.html(d.league + "<br/>" + "Season: " + d.key + "<br/>" + "Total Fees Spend: " + parseInt(d.value/1000000) + "M(€)" )
+                        .style("left", (d3.event.pageX ) + "px")
+                        .style("top", (d3.event.pageY) + "px");
+                })
+                .on("mouseout", function(d) {
+                    div.transition()
+                        .duration(500)
+                        .style("opacity", 0);
+                });
         }
 
     }
@@ -533,6 +635,12 @@
             .attr("y2", function(d) { return yScale(d.key); })
             .attr("stroke", "grey");
 
+
+        // Define the div for the tooltip to show mouse-over
+        var div = d3.select("#lollipop_graph").append("div")
+            .attr("class", "tooltipLolli")
+            .style("opacity", 0);
+
 		// Circles
         lollipop_Graph.selectAll("mycircle")
             .data(dataFor_Lollipop)
@@ -542,7 +650,20 @@
             .attr("cy", function(d) { return yScale(d.key); })
             .attr("r", "7")
             .style("fill", "#69b3a2")
-            .attr("stroke", "black");
+            .attr("stroke", "black")
+            .on("mouseover", function(d) { // Adding mouseover effect to have details on demand.
+                div.transition()
+                    .duration(200)
+                    .style("opacity", .9);
+                div.html(d.key + "<br/>" +"Total Fees Spend: " + parseInt(d.value / 1000000) + "M(€)")
+                    .style("left", (d3.event.pageX - 250) + "px")
+                    .style("top", (d3.event.pageY) + "px");
+            })
+            .on("mouseout", function(d) {
+                div.transition()
+                    .duration(500)
+                    .style("opacity", 0);
+            });
 
 
 
