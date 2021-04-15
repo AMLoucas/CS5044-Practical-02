@@ -193,16 +193,17 @@
         <!-- Checkboxes for Football League filtering -->
         <h3>Choose League(s):</h3>
         <form id="league-range">
-            <input type="checkbox" id="league1" value="Premier League" onchange="cleanDataToDraw()" checked>
-            <label for="league1">Premier League</label><br>
-            <input type="checkbox" id="league2" value="Ligue 1" onchange="cleanDataToDraw()" checked>
-            <label for="league2">Ligue 1</label><br>
             <input type="checkbox" id="league3" value="1.Bundesliga" onchange="cleanDataToDraw()" checked>
             <label for="league3">Bundesliga</label><br>
-            <input type="checkbox" id="league4" value="Serie A" onchange="cleanDataToDraw()" checked>
-            <label for="league4">Serie A</label><br>
             <input type="checkbox" id="league5" value="LaLiga" onchange="cleanDataToDraw()" checked>
             <label for="league5">LaLiga</label><br>
+            <input type="checkbox" id="league2" value="Ligue 1" onchange="cleanDataToDraw()" checked>
+            <label for="league2">Ligue 1</label><br>
+            <input type="checkbox" id="league1" value="Premier League" onchange="cleanDataToDraw()" checked>
+            <label for="league1">Premier League</label><br>
+            <input type="checkbox" id="league4" value="Serie A" onchange="cleanDataToDraw()" checked>
+            <label for="league4">Serie A</label><br>
+
         </form>
     </div>
 
@@ -495,8 +496,8 @@
 
                     // Using scale point so lines are plotted more precisely.
                     var xScale = d3.scalePoint()
-                        .range([10, width]) // Start from 50 because dont want both axis to be stuck.
-                        .domain(positions.sort());
+                            .range([10, width]) // Start from 50 because dont want both axis to be stuck.
+                            .domain(positions.sort());
 
                     // Y-AXIS creation and domain.
                     var transfer_per = new Array();
@@ -511,49 +512,46 @@
                         return parseInt(d);
                     });
                     var yScale = d3.scaleLinear()
-                        .range([height, 0])
-                        .domain(y_ax);
+                            .range([height, 0])
+                            .domain(y_ax);
 
 
                     // Creation of svg element.
                     var scatterLine = d3.select("#Scatter_Chart")
-                        .append('svg')
-                        .attr('class', 'LineSVG')
-                        .attr('height', height + margin.top + margin.bottom)
-                        .attr("width", width + margin.left + margin.right)
-                        .style("margin-left", margin.left)
-                        .append("g")
-                        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                            .append('svg')
+                            .attr('class', 'LineSVG')
+                            .attr('height', height + margin.top + margin.bottom)
+                            .attr("width", width + margin.left + margin.right)
+                            .style("margin-left", margin.left)
+                            .append("g")
+                            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
                     // to be able to use x axis to css
                     // and plotting
                     scatterLine.append("g")
-                        .attr("class", "x axis")
-                        .attr("transform", "translate(0, " + height + ")")
-                        .call(d3.axisBottom(xScale)) // Specifying x-axis to be on bottom.
-                        .selectAll("text")
-                        .attr("dx", "-.8em")
-                        .attr("dy", "-.55em")
-                        .attr("transform", "translate(5, 0)rotate(-45)")
-                        .style("text-anchor", "end");
+                            .attr("class", "x axis")
+                            .attr("transform", "translate(0, " + height + ")")
+                            .call(d3.axisBottom(xScale)) // Specifying x-axis to be on bottom.
+                            .selectAll("text")
+                            .attr("dx", "-.8em")
+                            .attr("dy", "-.55em")
+                            .attr("transform", "translate(5, 0)rotate(-45)")
+                            .style("text-anchor", "end");
 
                     // ADDING TITLE ON X-AXIS.
                     scatterLine.append("text")
                             .attr("transform",
-                                    "translate(" + (width/2) + " ," +
-                                    (height + margin.top ) + ")")
+                                    "translate(" + (width / 2) + " ," +
+                                    (height + margin.top) + ")")
                             .style("text-anchor", "middle")
                             .text("PLAYERS POSITION");
-
-
-
 
 
                     // to be able to use y axis to css
                     // and plotting
                     scatterLine.append("g")
-                        .attr("class", "y axis")
-                        .call(d3.axisLeft(yScale)); // Specifying y-axis to be on left.
+                            .attr("class", "y axis")
+                            .call(d3.axisLeft(yScale)); // Specifying y-axis to be on left.
 
                     //ADDING TITLE ON Y-AXIS
                     scatterLine.append("text")
@@ -576,6 +574,17 @@
                     league_Selected.sort();
                     final.sort(compare);
 
+                    // Setting the colours of the circles for each scatter
+                    var colour_Points = {
+                        "LaLiga": 'red',
+                        "Premier League": 'blue',
+                        "1.Bundesliga": 'black',
+                        "Serie A": 'green',
+                        "Ligue 1": 'orange'
+                    };
+
+                    var legendBox = new Array;
+
                     // Define the div for the tooltip
                     var div = d3.select("#Scatter_Chart").append("div")
                             .attr("class", "tooltipScatter")
@@ -584,42 +593,68 @@
 
                     for (var scatterGroup = 0; scatterGroup < league_Selected.length; scatterGroup++) {
                         // Appending points for Laliga
-                        var selector = "scatter"+scatterGroup;
+                        var selector = "scatter" + scatterGroup;
 
                         // Assign team in object for mouseover.
                         // Code for this line was found: https://stackoverflow.com/questions/53098658/modify-object-values-in-an-array-of-objects
-                        var DrawResult = (final[scatterGroup].values).map(result => Object.assign({}, result, { league: league_Selected[scatterGroup] }));
-                        console.log(DrawResult);
+                        var DrawResult = (final[scatterGroup].values).map(result => Object.assign({}, result, {league: league_Selected[scatterGroup]}));
+
+                        var col_key = league_Selected[scatterGroup];
+                        var col_val = colour_Points[league_Selected[scatterGroup]];
+
+                        // adding values that will be used in legend box
+                        legendBox.push({key: col_key, value: col_val});
 
                         scatterLine.selectAll(selector)
-                            .data(DrawResult) // Use data with the new assigned league.
-                            .enter()
-                            .append("circle")
-                            .attr("name", league_Selected[scatterGroup]) // To inedx circles for each league to modify.
-                            .attr("cx", function (d) {
-                                return xScale(d.key);
-                            })
-                            .attr("cy", function (d) {
-                                return yScale(parseInt(d.value))
-                            })
-                            .attr("r", 8)
-                                .on("mouseover", function(d) {
+                                .data(DrawResult) // Use data with the new assigned league.
+                                .enter()
+                                .append("circle")
+                                .attr("name", league_Selected[scatterGroup]) // To inedx circles for each league to modify.
+                                .attr("cx", function (d) {
+                                    return xScale(d.key);
+                                })
+                                .attr("cy", function (d) {
+                                    return yScale(parseInt(d.value))
+                                })
+                                .attr("r", 8)
+                                .on("mouseover", function (d) {
                                     div.transition()
                                             .duration(200)
                                             .style("opacity", .9);
-                                    div.html(d.league + "<br/>" + "Transer Fees spend(€) : "  + parseInt(d.value / 1000000) + "M <br/>" + "On position: " + d.key)
+                                    div.html(d.league + "<br/>" + "Transer Fees spend(€) : " + parseInt(d.value / 1000000) + "M <br/>" + "On position: " + d.key)
                                             .style("left", (d3.event.pageX - 250) + "px")
                                             .style("top", (d3.event.pageY) + "px");
                                 })
-                                .on("mouseout", function(d) {
+                                .on("mouseout", function (d) {
                                     div.transition()
                                             .duration(500)
                                             .style("opacity", 0);
                                 });
+
                     }
 
+                    // Code of adding a hand made legend box
+                    // Code was inspired from de-graph-gallery : https://www.d3-graph-gallery.com/graph/custom_legend.html
+                    // In combination with stack-overflow answer : https://stackoverflow.com/questions/13573771/adding-a-chart-legend-in-d3
+                    var i = 1;
+                    legendBox.forEach(function(d){
+                        scatterLine.append("rect")
+                                .attr("width", 15)
+                                .attr("height", 15)
+                                .attr("x", width - 80)
+                                .attr("y", i * 25)
+                                .style("fill", d.value);
+                        scatterLine.append("text")
+                                .attr("x", width - 60)
+                                .attr("y", i * 25 + 8)
+                                .text(d.key)
+                                .style("font-size", "15px")
+                                .attr("alignment-baseline","middle");
+                        i += 1;
+                    });
 
                 }
+
 
 
 
@@ -628,7 +663,6 @@
         </div>
     </div>
 </div>
-
 
 </body>
 
