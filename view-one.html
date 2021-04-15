@@ -27,9 +27,49 @@
 		width: 100%;
 	}
 
-	.line_graph {
-		width: 80%;
+	.row {
+		min-height: 80%;
 		height: 80%;
+		width: 100%;
+	}
+
+	* {
+		box-sizing: border-box;
+	}
+
+	/* Create three unequal columns that floats next to each other */
+	.column {
+		float: left;
+		padding: 10px;
+	}
+
+	/* This is the filter column */
+	.left {
+		width: 15%;
+		border-right-width: thin;
+		border-right-style: solid;
+		height: 115%;
+		text-align: left;
+
+	}
+
+	/* Plot columns. Middle = BarGraph, Right = Scatter */
+	.middle, .right {
+		width: 35%;
+		height: 90%;
+
+	}
+
+	/* Clear floats after the columns */
+	.row:after {
+		content: "";
+		display: table;
+		clear: both;
+	}
+
+	.line_graph {
+		width: 90%;
+		height: 90%;
 		align-items: center;
 	}
 
@@ -83,25 +123,45 @@
 		</ul>
 	</nav>
 
-	<h3>Choose League(s):</h3>
-	<form id="league-range">
-		<input type="checkbox" id="league3" value="1.Bundesliga" onchange="cleanDataToDraw()" checked>
-		<label for="league3">Bundesliga</label><br>
-		<input type="checkbox" id="league5" value="LaLiga" onchange="cleanDataToDraw()" checked>
-		<label for="league5">LaLiga</label><br>
-		<input type="checkbox" id="league2" value="Ligue 1" onchange="cleanDataToDraw()" checked>
-		<label for="league2">Ligue 1</label><br>
-		<input type="checkbox" id="league1" value="Premier League" onchange="cleanDataToDraw()" checked>
-		<label for="league1">Premier League</label><br>
-		<input type="checkbox" id="league4" value="Serie A" onchange="cleanDataToDraw()" checked>
-		<label for="league4">Serie A</label><br>
+	<div class="row">
+		<div class="column left">
+			<h3>Choose League(s):</h3>
+			<form id="league-range">
+				<input type="checkbox" id="league3" value="1.Bundesliga" onchange="cleanDataToDraw()" checked>
+				<label for="league3">Bundesliga</label><br>
+				<input type="checkbox" id="league5" value="LaLiga" onchange="cleanDataToDraw()" checked>
+				<label for="league5">LaLiga</label><br>
+				<input type="checkbox" id="league2" value="Ligue 1" onchange="cleanDataToDraw()" checked>
+				<label for="league2">Ligue 1</label><br>
+				<input type="checkbox" id="league1" value="Premier League" onchange="cleanDataToDraw()" checked>
+				<label for="league1">Premier League</label><br>
+				<input type="checkbox" id="league4" value="Serie A" onchange="cleanDataToDraw()" checked>
+				<label for="league4">Serie A</label><br>
 
-	</form>
+			</form>
+		</div>
 
-	<!-- Create a div where the graph will take place -->
-	<div id="line_graph" class="line_graph">
+		<div class="column middle">
+			<!-- Create a div where the graph will take place -->
+			<div id="line_graph" class="line_graph">
 
+			</div>
+
+		</div>
+
+		<div class="column right">
+
+			<!-- Create a div where the graph will take place -->
+			<div id="lollipop_graph" class="lollipop_graph">
+
+			</div>
+
+		</div>
 	</div>
+
+
+
+
 
 </body>
 
@@ -115,7 +175,7 @@
     // Margin variable to use to position visualisation more precise
     var margin = { top: 75, bottom: 100, left: 75, right: 50};
     // Getting height and width of the div elements the graphs will be inputted in.
-    var width = document.getElementById('line_graph').getBoundingClientRect().width ;	//width of the svg element (in pixels)
+    var width = document.getElementById('line_graph').getBoundingClientRect().width;	//width of the svg element (in pixels)
     var height = document.getElementById('line_graph').getBoundingClientRect().height ; //height of the svg element
 
     // Calling function to draw the graphs needed.
@@ -181,7 +241,7 @@
                         // Our y domain will be transfer fee
                         return d3.sum(leaves, function (d) {
                             //  Need to tranform numbers to int because they are strings now.
-                            return parseInt(d.Transfer_fee)
+                            return parseInt(d.Transfer_fee);
 
                         })
                     })
@@ -192,6 +252,24 @@
 
                 // Function to draw a line graph
                 drawSeasonLine(dataFor_Line, domain_x);
+
+                // Creating aggregating data to create the lollipop
+                var dataFor_Lollipop = d3.nest()
+					.key(function(d) {
+					    return d.Position;
+					})
+					.rollup(function(leaves) {
+					    return d3.sum(leaves, function(d) {
+					        return parseInt(d.Transfer_fee);
+						})
+					})
+					.entries(data);
+
+                // Print the data to see the resulted array
+				console.log(dataFor_Lollipop);
+
+				// Function to draw the lollipop
+				drawLollipop(dataFor_Lollipop);
 
 
             });
@@ -253,7 +331,7 @@
             .attr('class', 'plot_element')
             .attr('height', height + margin.top + margin.bottom)
             .attr("width", width + margin.left + margin.right)
-            .style("margin-left", margin.left)
+            .style("margin-right", margin.right)
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -326,6 +404,148 @@
                     .y(function(d) { return yScale(d.value) })
                 )
         }
+
+    }
+
+    function drawLollipop(dataFor_Lollipop) {
+
+        // Removing previous data to create new state.
+        document.getElementById("lollipop_graph").innerHTML = "";
+
+
+        /**
+         * X-AXIS CONSTRUNCTION
+         */
+
+        // Computing the correct domain fo x-axis
+        var transfer = new Array();
+        dataFor_Lollipop.forEach(function (d) {
+            transfer.push(d.value);
+        });
+
+        // Getting the minimum transfer fee and the maximum.
+        var min_max_fee = d3.extent(transfer, function (d) {
+            return parseInt(d);
+        });
+
+        // Since transfer fee is linear, we are scaling linearly.
+        var xScale = d3.scaleLinear()
+            .range([0, width])
+            .domain(min_max_fee);
+
+
+        /**
+         * Y-AXIS CONSTRUCTION
+         */
+
+        // Calculating the corect scale for y axis
+			// Doing it this way manually so it can be sorted.
+		var positions = new Array();
+        dataFor_Lollipop.forEach(function (d) {
+            positions.push(d.key);
+        });
+
+        // To divide y-axis in bands of equal spaces and distances.
+        var yScale = d3.scaleBand()
+            .range([0, height])
+            .domain(positions.sort())
+            .padding(1);
+
+        /**
+         * Creating graph area and axis in position
+         */
+
+            // Creation of svg element.
+        var lollipop_Graph = d3.select("#lollipop_graph")
+                .append('svg')
+                .attr('class', 'plot_element')
+                .attr('height', height + margin.top + margin.bottom)
+                .attr("width", width + margin.left + margin.right)
+                .style("margin-left", margin.left)
+                .append("g")
+                .attr("transform", "translate(" + (margin.left + 15) + "," + margin.top + ")");
+
+        /**
+         * Adding the X-AXIS on the plot.
+         */
+
+        // Adding the x-axis with labels on element
+        lollipop_Graph.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0, " + height + ")")
+            .call(d3.axisBottom(xScale)) // Specifying x-axis to be on bottom.
+            .selectAll("text")
+            .attr("transform", "translate(5, 0)rotate(-45)")
+            .style("text-anchor", "end");
+
+
+        // Adding title for the x-axis.
+        lollipop_Graph.append("text")
+            .attr("transform",
+                "translate(" + (width / 2) + " ," +
+                (height + margin.top) + ")")
+            .style("text-anchor", "middle")
+            .text("TRANSFER FEE'S (€)");
+
+        /**
+         * Adding the Y-AXIS on the plot.
+         */
+
+        // Adding the y-axis and its labels on element.
+        lollipop_Graph.append("g")
+            .attr("class", "y axis")
+            .call(d3.axisLeft(yScale)) // Specifying y-axis to be on left.
+			.style("text-anchor", "end");
+
+
+        // Adding a title for the y-axis.
+        lollipop_Graph.append("text")
+            .attr("y", -5)
+            .attr("x", +5)
+            .style("text-anchor", "middle")
+            .style("font-size", "1em")
+            .text("PLAYER'S POSITION");
+
+        /**
+         * Adding a plot title for the graph.
+         */
+        lollipop_Graph.append("text")
+            .attr("class", "title")
+            .attr("x", (width / 2))
+            .attr("y", 0 - (margin.top / 2))
+            .attr("text-anchor", "middle")
+            .style("font-size", "20px")
+            .text("TRANSFER FEES SPEND(€) BY EACH POSITION");
+
+        /**
+         * Function that will fit a lollipo
+		 * Lollipop is constructed by a line and a circle.
+         */
+
+        // Lines
+        lollipop_Graph.selectAll("myline")
+            .data(dataFor_Lollipop)
+            .enter()
+            .append("line")
+            .attr("x1", function(d) { return xScale(d.value); })
+            .attr("x2", xScale(0))
+            .attr("y1", function(d) { return yScale(d.key); })
+            .attr("y2", function(d) { return yScale(d.key); })
+            .attr("stroke", "grey");
+
+		// Circles
+        lollipop_Graph.selectAll("mycircle")
+            .data(dataFor_Lollipop)
+            .enter()
+            .append("circle")
+            .attr("cx", function(d) { return xScale(d.value); })
+            .attr("cy", function(d) { return yScale(d.key); })
+            .attr("r", "7")
+            .style("fill", "#69b3a2")
+            .attr("stroke", "black");
+
+
+
 
     }
 
