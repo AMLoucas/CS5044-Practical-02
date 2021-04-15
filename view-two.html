@@ -51,6 +51,7 @@
         .middle, .right {
             width: 35%;
             height: 90%;
+            
         }
 
         /* Clear floats after the columns */
@@ -633,9 +634,12 @@
 
                     }
 
-                    // Code of adding a hand made legend box
-                    // Code was inspired from de-graph-gallery : https://www.d3-graph-gallery.com/graph/custom_legend.html
-                    // In combination with stack-overflow answer : https://stackoverflow.com/questions/13573771/adding-a-chart-legend-in-d3
+                    /**
+                    Code of adding a hand made legend box
+                    Code was inspired from de-graph-gallery : https://www.d3-graph-gallery.com/graph/custom_legend.html
+                    In combination with stack-overflow answer : https://stackoverflow.com/questions/13573771/adding-a-chart-legend-in-d3
+                     **/
+
                     var i = 1;
                     legendBox.forEach(function(d){
                         scatterLine.append("rect")
