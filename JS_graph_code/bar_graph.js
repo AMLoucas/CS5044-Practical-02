@@ -83,7 +83,7 @@ function drawBarGraph(data_for_bar) {
      */
     // Define the div for the tooltip
     var div = d3.select("#Bar_graph").append("div")
-        .attr("class", "tooltipBar")
+        .attr("class", "tooltip")
         .style("opacity", 0);
 
     /**

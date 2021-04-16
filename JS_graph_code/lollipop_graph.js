@@ -137,7 +137,7 @@ function drawLollipop(dataFor_Lollipop) {
 
     // Define the div for the tooltip to show mouse-over
     var div = d3.select("#lollipop_graph").append("div")
-        .attr("class", "tooltipLolli")
+        .attr("class", "tooltip")
         .style("opacity", 0);
 
     // Circles

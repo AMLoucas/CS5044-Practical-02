@@ -136,7 +136,7 @@ function drawScatterGraph(data_for_scatter, all_positions, league_Selected) {
      * Fitting a tooltip div to allow mouse over effect.
      */
     var div = d3.select("#Scatter").append("div")
-        .attr("class", "tooltipScatter")
+        .attr("class", "tooltip")
         .style("opacity", 0);
 
 
@@ -169,7 +169,7 @@ function drawScatterGraph(data_for_scatter, all_positions, league_Selected) {
                     .duration(200)
                     .style("opacity", .9);
                 div.html(d.league + "<br/>" + "Transer Fees spend(€) : " + parseInt(d.value / 1000000) + "M <br/>" + "On position: " + d.key)
-                    .style("left", (d3.event.pageX - 250) + "px")
+                    .style("left", (d3.event.pageX) + "px")
                     .style("top", (d3.event.pageY) + "px");
             })
             .on("mouseout", function (d) {

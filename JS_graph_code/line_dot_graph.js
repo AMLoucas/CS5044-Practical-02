@@ -128,7 +128,7 @@ function drawSeasonLine(dataFor_Line) {
 
         // Define the div for the tooltip to show mouse-over
     var div = d3.select("#line_graph").append("div")
-            .attr("class", "tooltipLine")
+            .attr("class", "tooltip")
             .style("opacity", 0);
 
     for (var pointer = 0; pointer < dataFor_Line.length; pointer++) {
