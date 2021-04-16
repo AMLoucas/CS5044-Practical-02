@@ -148,7 +148,7 @@ function drawLollipop(dataFor_Lollipop) {
         .attr("cx", function(d) { return Lollipop_xScale(d.value); })
         .attr("cy", function(d) { return Lollipop_yScale(d.key); })
         .attr("r", "7")
-        .style("fill", "#69b3a2")
+        .style("fill", "steelblue")
         .attr("stroke", "black")
         .on("mouseover", function(d) { // Adding mouseover effect to have details on demand.
             div.transition()
