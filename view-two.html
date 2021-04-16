@@ -10,20 +10,21 @@
     <title> View-Two </title>
 
     <style>
-
         html {
             min-height: 100%;
             height: 100%;
+            width: 100%;
         }
 
         body {
-            min-height: 90%;
-            height: 90%;
+            min-height: 100%;
+            height: 100%;
+            width: 100%;
         }
 
         .row {
-            min-height: 80%;
-            height: 80%;
+            min-height: 100%;
+            height: 100%;
             width: 100%;
         }
 
@@ -39,19 +40,21 @@
 
         /* This is the filter column */
         .left {
-            width: 15%;
+            min-height: 100%;
+            width: 10%;
             border-right-width: thin;
             border-right-style: solid;
-            height: 115%;
+            height: 100%;
             text-align: left;
 
         }
 
         /* Plot columns. Middle = BarGraph, Right = Scatter */
         .middle, .right {
-            width: 35%;
-            height: 90%;
-            
+            min-height: 100%;
+            width: 45%;
+            height: 100%;
+
         }
 
         /* Clear floats after the columns */
@@ -60,6 +63,13 @@
             display: table;
             clear: both;
         }
+
+        .bar_graph {
+            width: 90%;
+            height: 90%;
+            align-items: center;
+        }
+
 
         /* Style for mouse over effect in scatter */
         div.tooltipScatter {
@@ -208,466 +218,154 @@
         </form>
     </div>
 
-    <!-- The part of the bar graph -->
-    <div id="plots" class="column middle">
-        <!-- Visualisation will be appeared. -->
-        <div id="Bar_Chart" >
-            <!-- Script organizing the data to visualize later. -->
-            <script>
-                //style="width: 100%; height: 200%"
-                // Reading in the data.
-                var dataPath = "data/top250-00-19.csv";
 
-                // Margin variable to use to position visualisation more precise
-                var margin = { top: 75, bottom: 100, left: 75, right: 50};
-                // Getting height and width of the div elements the graphs will be inputted in.
-                var width = document.getElementById('plots').getBoundingClientRect().width ;	//width of the svg element (in pixels)
-                var height = document.getElementById('plots').getBoundingClientRect().height ; //height of the svg element
-
-                // Calling function to draw the graphs needed.
-                cleanDataToDraw();
-
-                function cleanDataToDraw() {
-
-                    /**
-                     * FILTERING DATA ACCORDING TO CHECKBOXES CHECKED FROM USER.
-                     **/
-
-                        // Getting the data according to seasons interested in.
-                    var season_Selected = new Array();
-                    // Loop through all the seasons to check if checkboxes are checked (user wants)
-                    for (var i = 1; i<= 19; i++) {
-                        // Creating the string to check for a specific season if box checkes
-                        var season = "season"+i;
-                        // if box is checked then get the seasons value and input in array.
-                        if (document.getElementById(season).checked){
-                            season_Selected.push(document.getElementById(season).value);
-                        }
-                    }
-
-                    // Getting the data according to the leagues interested in.
-                    var league_Selected = new Array();
-                    // Loop through all top 5 leagues to check if checkboxes are checked (user wants)
-                    for (var i = 1; i<=5; i++) {
-                        // Creating the string to check for a specific league if box checked
-                        var league = "league"+i;
-                        // If the specific checkbox is checkes then we add the value in array.
-                        if (document.getElementById(league).checked) {
-                            league_Selected.push(document.getElementById(league).value);
-                        }
-                    }
-
-
-
-                    // Reading the data in the javascript environment for bar graph.
-                    d3.csv(dataPath)
-                        .then(function (data) {
-                            // Use of anonymous function
-                            // Filtering data and removing all records with seasons not interested in.
-                            data = data.filter(season => season_Selected.includes(season.Season));
-                            // Filtering the data to remove the leagues not interested in.
-                            data = data.filter(league => league_Selected.includes(league.League_to));
-
-
-                            //  Because we want to create a bar chart for the sum(fees) for every season
-                            //  We need to use nest() to group data according to the season of the observation
-                            var dataBy_Season = d3.nest()
-                                .key(function (d) {
-                                    //  Specifying how we want to do the grouping
-                                    if (season_Selected.includes(d.Season)) {
-                                        return d.Season;
-                                    }
-                                })
-                                .rollup(function (leaves) {
-                                    //  Specifying what attribute to sum for the bar chart (Transfer_fee)
-                                    return d3.sum(leaves, function (d) {
-                                        //  Need to tranform numbers to int because they are strings now.
-                                        return parseInt(d.Transfer_fee)
-
-                                    })
-                                })
-                                .entries(data); // Specifying on what data to do the grouping
-                            //console.log(dataBy_Season);
-
-
-                            // Function to draw a bar graph.
-                            drawBarGraph(dataBy_Season);
-
-                            // Datasets for the line graph.
-                            var data_for_line = d3.nest()
-                                .key(function (d) {
-                                    //  Specifying how we want to do the grouping
-                                    return d.League_to;
-                                })
-                                .key(function (e) {
-                                    // Specifying the second grouping looking for.
-                                    return e.Position;
-                                })
-                                .rollup(function (leaves) {
-                                    //  Specifying what attribute to sum for the bar chart (Transfer_fee)
-                                    return d3.sum(leaves, function (d) {
-                                        //  Need to tranform numbers to int because they are strings now.
-                                        return parseInt(d.Transfer_fee)
-
-                                    })
-                                })
-                                .entries(data); // Specifying on what data to do the grouping
-
-                            var domain_x = d3.nest()
-                                .key(function (e) {
-                                    // Specifying the second grouping looking for.
-                                    return e.Position;
-                                })
-                                .rollup(function (leaves) {
-                                    //  Specifying what attribute to sum for the bar chart (Transfer_fee)
-                                    return d3.sum(leaves, function (d) {
-                                        //  Need to tranform numbers to int because they are strings now.
-                                        return parseInt(d.Transfer_fee)
-
-                                    })
-                                })
-                                .entries(data); // Specifying on what data to do the grouping
-                            // Function to draw a bar graph.
-                            drawLineGraph(data_for_line, domain_x, league_Selected);
-                        });
-                };
-
-                // Create the Bar Graph.
-                function drawBarGraph(data) {
-                    document.getElementById("Bar_Chart").innerHTML = "";
-
-                    // DATA IS BEING USED TO PLOT NOW.
-
-                    // Y-AXIS creation and domain.
-                    // Creating the width of all bar chart and padding between each bar
-                    var yScale = d3.scaleBand().range([0, height]).padding(0.1);
-                    // Giving the domain of the x-axis
-                    yScale.domain(data.map(function (d) { return d.key; }));
-
-                    //X-AXIS creation and domain
-                    var xScale = d3.scaleLinear().range([0, width]);
-                    // Giving the domain from 0(since no transfers = 0) to the maximum transfer sum season.
-                    xScale.domain([0, d3.max(data, function (d) { return parseInt(d.value/1000000); })]);
-
-
-                    // Creation of svg element.
-                    var svg = d3.select("#Bar_Chart")
-                        .append('svg')
-                        .attr('height', height + margin.top + margin.bottom)
-                        .attr("width", width + margin.left + margin.right)
-                        .append("g")
-                        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-                    // to be able to use x axis to css
-                    svg.append("g")
-                        .attr("class", "x axis")
-                        .attr("transform", "translate(0, " + height + ")")
-                        .call(d3.axisBottom(xScale)) // Specifying x-axis to be on bottom.
-                        .selectAll("text")
-                        .attr("transform", "translate(-10,0)rotate(-45)")
-                        .style("text-anchor", "end");
-
-                    // ADDING TITLE ON X-AXIS.
-                    svg.append("text")
-                            .attr("transform",
-                                    "translate(" + (width/2) + " ," +
-                                    (height + margin.top ) + ")")
-                            .style("text-anchor", "middle")
-                            .text("TRANSFER FEE'S IN MILLIONS(€)");
-
-
-
-                    // to be able to use y axis to css
-                    svg.append("g")
-                        .attr("class", "y axis")
-                        .call(d3.axisLeft(yScale)); // Specifying y-axis to be on left.
-
-
-                    //ADDING TITLE ON Y-AXIS
-                    svg.append("text")
-                            .attr("y", -5)
-                            .style("text-anchor", "END")
-                            .style("font-size", "1em")
-                            .text("SEASON");
-
-                    svg.append("text")
-                            .attr("class", "title")
-                            .attr("x", (width / 2))
-                            .attr("y", 0 - (margin.top / 2))
-                            .attr("text-anchor", "middle")
-                            .style("font-size", "20px")
-                            .text("TRANSFER FEES SPEND(€) BY SEASON");
-
-
-                            // Define the div for the tooltip
-                    var div = d3.select("#Bar_Chart").append("div")
-                                    .attr("class", "tooltipBar")
-                                    .style("opacity", 0);
-
-                    // Selecting or bars created from scaleBand. One bar for each value in domain.
-                    svg.selectAll("bar")
-                        .data(data) // Data being used.
-                        .enter().append("rect") // Each bar create rectangle
-                        .style("fill", "steelblue")
-                        .attr("class", "bar")
-                        .attr("x", xScale(0)) // Placing bar at value xScale on x axis
-                        .attr("y", function (d) { return yScale(d.key); }) // Ending height at value yScale on y axis
-                        .attr("width", function (d) {return xScale(d.value/1000000)}) // Specifyin the width of each bar according to the bar widths (finds it auto)
-                        .attr("height", yScale.bandwidth())
-                            .on("mouseover", function(d) {
-                                div.transition()
-                                        .duration(200)
-                                        .style("opacity", .9);
-                                div.html("Season: " + d.key + "<br/>" + "Total Transfer Fees(€): "  + parseInt(d.value / 1000000) + "M")
-                                        .style("left", (d3.event.pageX) + "px")
-                                        .style("top", (d3.event.pageY) + "px");
-                            })
-                            .on("mouseout", function(d) {
-                                div.transition()
-                                        .duration(500)
-                                        .style("opacity", 0);
-                            });
-
-
-                }
-
-            </script>
-
-        </div>
-
-
+    <div class="column middle">
+        <!-- Bar graph area -->
+        <div id="Bar_graph" class="bar_graph"> </div>
     </div>
 
+
     <div class="column right">
-        <!-- Line graph of different leagues will appear -->
-        <div id="Scatter_Chart" style="width: 100%; height: 100%;">
 
-            <script>
-                function drawLineGraph(data_for_line, domain_x, league_Selected) {
-                    document.getElementById("Scatter_Chart").innerHTML = "";
-                    // Reading the data in the javascript enviroment.
-
-                    // Getting iterator index of the leagues interested in array frame.
-                    var iterator_interest = new Array();
-                    var i = 0;
-                    data_for_line.forEach(function (d) {
-                        if (league_Selected.includes(d.key)) {
-                            iterator_interest.push(i);
-                        }
-                        i = i + 1;
-                    });
-
-                    var final = new Array();
-                    iterator_interest.forEach(function (iter) {
-                        final.push(data_for_line[iter]);
-                    });
-
-                    /**
-                     * Function for compare to sort the array of objects using each objects key.
-                     * Code was found from https://www.sitepoint.com/sort-an-array-of-objects-in-javascript/
-                     * Using code from here to do the sorting.
-                     */
-                    function compare(a, b) {
-                        // Use toUpperCase() to ignore character casing
-                        const keyA = a.key.toUpperCase();
-                        const keyB = b.key.toUpperCase();
-
-                        let comparison = 0;
-                        if (keyA > keyB) {
-                            comparison = 1;
-                        } else if (keyA < keyB) {
-                            comparison = -1;
-                        }
-                        return comparison;
-                    }
-
-                    // Sorting each object (each league) according to position of player.
-                    final.forEach(function (d) {
-                        d.values.sort(compare);
-
-                    });
+        <!-- Lollipop graph area -->
+        <div id="lollipop_graph" class="lollipop_graph"> </div>
 
 
-                    // X-AXIS creation and domain.
-                    // Creating x axis scale and domain.
-                    var positions = new Array()
-                    domain_x.forEach(function (d) {
-                        positions.push(d.key);
-                    });
-
-                    // Using scale point so lines are plotted more precisely.
-                    var xScale = d3.scalePoint()
-                            .range([10, width]) // Start from 50 because dont want both axis to be stuck.
-                            .domain(positions.sort());
-
-                    // Y-AXIS creation and domain.
-                    var transfer_per = new Array();
-                    final.forEach(function (d) {
-                        (d.values).forEach(function (e) {
-                            transfer_per.push(e.value);
-                        })
-                    });
-
-                    // Getting the y axis creation and domain.
-                    var y_ax = d3.extent(transfer_per, function (d) {
-                        return parseInt(d);
-                    });
-                    var yScale = d3.scaleLinear()
-                            .range([height, 0])
-                            .domain(y_ax);
-
-
-                    // Creation of svg element.
-                    var scatterLine = d3.select("#Scatter_Chart")
-                            .append('svg')
-                            .attr('class', 'LineSVG')
-                            .attr('height', height + margin.top + margin.bottom)
-                            .attr("width", width + margin.left + margin.right)
-                            .style("margin-left", margin.left)
-                            .append("g")
-                            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-                    // to be able to use x axis to css
-                    // and plotting
-                    scatterLine.append("g")
-                            .attr("class", "x axis")
-                            .attr("transform", "translate(0, " + height + ")")
-                            .call(d3.axisBottom(xScale)) // Specifying x-axis to be on bottom.
-                            .selectAll("text")
-                            .attr("dx", "-.8em")
-                            .attr("dy", "-.55em")
-                            .attr("transform", "translate(5, 0)rotate(-45)")
-                            .style("text-anchor", "end");
-
-                    // ADDING TITLE ON X-AXIS.
-                    scatterLine.append("text")
-                            .attr("transform",
-                                    "translate(" + (width / 2) + " ," +
-                                    (height + margin.top) + ")")
-                            .style("text-anchor", "middle")
-                            .text("PLAYERS POSITION");
-
-
-                    // to be able to use y axis to css
-                    // and plotting
-                    scatterLine.append("g")
-                            .attr("class", "y axis")
-                            .call(d3.axisLeft(yScale)); // Specifying y-axis to be on left.
-
-                    //ADDING TITLE ON Y-AXIS
-                    scatterLine.append("text")
-                            .attr("y", -5)
-                            .attr("x", +5)
-                            .style("text-anchor", "middle")
-                            .style("font-size", "1em")
-                            .text("TRANSFER FEE'S (€)");
-
-                    scatterLine.append("text")
-                            .attr("class", "title")
-                            .attr("x", (width / 2))
-                            .attr("y", 0 - (margin.top / 2))
-                            .attr("text-anchor", "middle")
-                            .style("font-size", "20px")
-                            .text("TRANSFER FEES SPEND(€) BY LEAGUE & POSITION");
-
-                    // Sort the array of objects to user for loop for each group of scatter
-                    // Must be same as league_Selected so it works good.
-                    league_Selected.sort();
-                    final.sort(compare);
-
-                    // Setting the colours of the circles for each scatter
-                    var colour_Points = {
-                        "LaLiga": 'red',
-                        "Premier League": 'blue',
-                        "1.Bundesliga": 'black',
-                        "Serie A": 'green',
-                        "Ligue 1": 'orange'
-                    };
-
-                    var legendBox = new Array;
-
-                    // Define the div for the tooltip
-                    var div = d3.select("#Scatter_Chart").append("div")
-                            .attr("class", "tooltipScatter")
-                            .style("opacity", 0);
-
-
-                    for (var scatterGroup = 0; scatterGroup < league_Selected.length; scatterGroup++) {
-                        // Appending points for Laliga
-                        var selector = "scatter" + scatterGroup;
-
-                        // Assign team in object for mouseover.
-                        // Code for this line was found: https://stackoverflow.com/questions/53098658/modify-object-values-in-an-array-of-objects
-                        var DrawResult = (final[scatterGroup].values).map(result => Object.assign({}, result, {league: league_Selected[scatterGroup]}));
-
-                        var col_key = league_Selected[scatterGroup];
-                        var col_val = colour_Points[league_Selected[scatterGroup]];
-
-                        // adding values that will be used in legend box
-                        legendBox.push({key: col_key, value: col_val});
-
-                        scatterLine.selectAll(selector)
-                                .data(DrawResult) // Use data with the new assigned league.
-                                .enter()
-                                .append("circle")
-                                .attr("name", league_Selected[scatterGroup]) // To inedx circles for each league to modify.
-                                .attr("cx", function (d) {
-                                    return xScale(d.key);
-                                })
-                                .attr("cy", function (d) {
-                                    return yScale(parseInt(d.value))
-                                })
-                                .attr("r", 8)
-                                .on("mouseover", function (d) {
-                                    div.transition()
-                                            .duration(200)
-                                            .style("opacity", .9);
-                                    div.html(d.league + "<br/>" + "Transer Fees spend(€) : " + parseInt(d.value / 1000000) + "M <br/>" + "On position: " + d.key)
-                                            .style("left", (d3.event.pageX - 250) + "px")
-                                            .style("top", (d3.event.pageY) + "px");
-                                })
-                                .on("mouseout", function (d) {
-                                    div.transition()
-                                            .duration(500)
-                                            .style("opacity", 0);
-                                });
-
-                    }
-
-                    /**
-                    Code of adding a hand made legend box
-                    Code was inspired from de-graph-gallery : https://www.d3-graph-gallery.com/graph/custom_legend.html
-                    In combination with stack-overflow answer : https://stackoverflow.com/questions/13573771/adding-a-chart-legend-in-d3
-                     **/
-
-                    var i = 1;
-                    legendBox.forEach(function(d){
-                        scatterLine.append("rect")
-                                .attr("width", 15)
-                                .attr("height", 15)
-                                .attr("x", width - 80)
-                                .attr("y", i * 25)
-                                .style("fill", d.value);
-                        scatterLine.append("text")
-                                .attr("x", width - 60)
-                                .attr("y", i * 25 + 8)
-                                .text(d.key)
-                                .style("font-size", "15px")
-                                .attr("alignment-baseline","middle");
-                        i += 1;
-                    });
-
-                }
-
-
-
-
-            </script>
-
-        </div>
     </div>
 </div>
 
+    <!-- Scatter plot area -->
+    <div id="Scatter"> </div>
+
+    <!-- Line graph area -->
+    <div id="line_graph" class="line_graph"> </div>
+
 </body>
+
+<!-- Script organizing the data to visualize later. -->
+<script>
+    //style="width: 100%; height: 200%"
+    // Reading in the data.
+    var dataPath = "data/top250-00-19.csv";
+
+    // Margin variable to use to position visualisation more precise
+    var margin = { top: 75, bottom: 100, left: 75, right: 50};
+    // Getting height and width of the div elements the graphs will be inputted in.
+    var width = document.getElementById('Bar_graph').getBoundingClientRect().width - margin.left - margin.right;	//width of the svg element (in pixels)
+    var height = document.getElementById('Bar_graph').getBoundingClientRect().height - margin.top - margin.bottom ; //height of the svg element
+
+    // Calling function to draw the graphs needed.
+    cleanDataToDraw();
+
+    function cleanDataToDraw() {
+
+        /**
+         * FILTERING DATA ACCORDING TO CHECKBOXES CHECKED FROM USER.
+         **/
+
+                // Getting the data according to seasons interested in.
+        var season_Selected = new Array();
+        // Loop through all the seasons to check if checkboxes are checked (user wants)
+        for (var i = 1; i<= 19; i++) {
+            // Creating the string to check for a specific season if box checkes
+            var season = "season"+i;
+            // if box is checked then get the seasons value and input in array.
+            if (document.getElementById(season).checked){
+                season_Selected.push(document.getElementById(season).value);
+            }
+        }
+
+        // Getting the data according to the leagues interested in.
+        var league_Selected = new Array();
+        // Loop through all top 5 leagues to check if checkboxes are checked (user wants)
+        for (var i = 1; i<=5; i++) {
+            // Creating the string to check for a specific league if box checked
+            var league = "league"+i;
+            // If the specific checkbox is checkes then we add the value in array.
+            if (document.getElementById(league).checked) {
+                league_Selected.push(document.getElementById(league).value);
+            }
+        }
+
+
+
+        // Reading the data in the javascript environment for bar graph.
+        d3.csv(dataPath)
+                .then(function (data) {
+                    // Use of anonymous function
+                    // Filtering data and removing all records with seasons not interested in.
+                    data = data.filter(season => season_Selected.includes(season.Season));
+                    // Filtering the data to remove the leagues not interested in.
+                    data = data.filter(league => league_Selected.includes(league.League_to));
+
+
+                    //  Because we want to create a bar chart for the sum(fees) for every season
+                    //  We need to use nest() to group data according to the season of the observation
+                    var dataBy_Season = d3.nest()
+                            .key(function (d) {
+                                //  Specifying how we want to do the grouping
+                                if (season_Selected.includes(d.Season)) {
+                                    return d.Season;
+                                }
+                            })
+                            .rollup(function (leaves) {
+                                //  Specifying what attribute to sum for the bar chart (Transfer_fee)
+                                return d3.sum(leaves, function (d) {
+                                    //  Need to tranform numbers to int because they are strings now.
+                                    return parseInt(d.Transfer_fee)
+
+                                })
+                            })
+                            .entries(data); // Specifying on what data to do the grouping
+                    //console.log(dataBy_Season);
+
+
+                    // Function to draw a bar graph.
+                    drawBarGraph(dataBy_Season);
+
+                    // Datasets for the line graph.
+                    var data_for_line = d3.nest()
+                            .key(function (d) {
+                                //  Specifying how we want to do the grouping
+                                return d.League_to;
+                            })
+                            .key(function (e) {
+                                // Specifying the second grouping looking for.
+                                return e.Position;
+                            })
+                            .rollup(function (leaves) {
+                                //  Specifying what attribute to sum for the bar chart (Transfer_fee)
+                                return d3.sum(leaves, function (d) {
+                                    //  Need to tranform numbers to int because they are strings now.
+                                    return parseInt(d.Transfer_fee)
+
+                                })
+                            })
+                            .entries(data); // Specifying on what data to do the grouping
+
+                    var all_positions = d3.nest()
+                            .key(function (e) {
+                                // Specifying the second grouping looking for.
+                                return e.Position;
+                            })
+                            .rollup(function (leaves) {
+                                //  Specifying what attribute to sum for the bar chart (Transfer_fee)
+                                return d3.sum(leaves, function (d) {
+                                    //  Need to tranform numbers to int because they are strings now.
+                                    return parseInt(d.Transfer_fee)
+
+                                })
+                            })
+                            .entries(data); // Specifying on what data to do the grouping
+                    // Function to draw a bar graph.
+                    drawScatterGraph(data_for_line, all_positions, league_Selected);
+                });
+    };
+
+
+
+</script>
+<script src="JS_graph_code/bar_graph.js"></script>
+<script src="JS_graph_code/scatter_graph.js"></script>
 
 </html>
