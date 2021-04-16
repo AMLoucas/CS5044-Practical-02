@@ -166,7 +166,7 @@ function drawSeasonLine(dataFor_Line) {
                     .duration(200)
                     .style("opacity", .9);
                 div.html(d.league + "<br/>" + "Season: " + d.key + "<br/>" + "Total Fees Spend: " + parseInt(d.value/1000000) + "M(€)" )
-                    .style("left", (d3.event.pageX ) + "px")
+                    .style("left", (d3.event.pageX) + "px")
                     .style("top", (d3.event.pageY) + "px");
             })
             .on("mouseout", function(d) {

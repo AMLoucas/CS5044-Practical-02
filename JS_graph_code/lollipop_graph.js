@@ -155,7 +155,7 @@ function drawLollipop(dataFor_Lollipop) {
                 .duration(200)
                 .style("opacity", .9);
             div.html(d.key + "<br/>" +"Total Fees Spend: " + parseInt(d.value / 1000000) + "M(€)")
-                .style("left", (d3.event.pageX - 250) + "px")
+                .style("left", (d3.event.pageX) + "px")
                 .style("top", (d3.event.pageY) + "px");
         })
         .on("mouseout", function(d) {
