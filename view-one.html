@@ -75,7 +75,7 @@
 
 	/* To give different colours to the data points in scatter. */
 	/* Each league to have a unique scatter plot */
-	path[name^="LaLiga"] {
+	[name^="LaLiga"] {
 		stroke: red;
 		stroke-width: 1.5px;
 		fill: none;
@@ -83,28 +83,28 @@
 
 	}
 
-	path[name^="Premier"] {
+	[name^="Premier"] {
 		stroke: blue;
 		stroke-width: 1.5px;
 		fill: none;
 		opacity: 0.75;
 	}
 
-	path[name^="1.Bunde"] {
+	[name^="1.Bunde"] {
 		stroke: black;
 		stroke-width: 1.5px;
 		fill: none;
 		opacity: 0.75;
 	}
 
-	path[name^="Serie A"] {
+	[name^="Serie A"] {
 		stroke: green;
 		stroke-width: 1.5px;
 		fill: none;
 		opacity: 0.75;
 	}
 
-	path[name^="Ligue"] {
+	[name^="Ligue"] {
 		stroke: orange;
 		stroke-width: 1.5px;
 		fill: none;
@@ -190,6 +190,50 @@
 
 	<div class="row">
 		<div class="column left">
+			<!-- checkboxes for the season filtering -->
+			<h3>Choose Season(s):</h3>
+			<form id="Range-Seasons">
+				<input type="checkbox" id="season1" class="season-box" value="2000-2001" onchange="cleanDataToDraw()" checked>
+				<label for="season1"> 2000-2001</label><br>
+				<input type="checkbox" id="season2" class="season-box" value="2001-2002" onchange="cleanDataToDraw()" checked>
+				<label for="season2"> 2001-2002</label><br>
+				<input type="checkbox" id="season3" class="season-box" value="2002-2003" onchange="cleanDataToDraw()" checked>
+				<label for="season3"> 2003-2003</label><br>
+				<input type="checkbox" id="season4" class="season-box" value="2003-2004" onchange="cleanDataToDraw()" checked>
+				<label for="season4"> 2003-2004</label><br>
+				<input type="checkbox" id="season5" class="season-box" value="2004-2005" onchange="cleanDataToDraw()" checked>
+				<label for="season5"> 2005-2005</label><br>
+				<input type="checkbox" id="season6" class="season-box" value="2005-2006" onchange="cleanDataToDraw()" checked>
+				<label for="season6"> 2005-2006</label><br>
+				<input type="checkbox" id="season7" class="season-box" value="2006-2007" onchange="cleanDataToDraw()" checked>
+				<label for="season7"> 2006-2007</label><br>
+				<input type="checkbox" id="season8" class="season-box" value="2007-2008" onchange="cleanDataToDraw()" checked>
+				<label for="season8"> 2007-2008</label><br>
+				<input type="checkbox" id="season9" class="season-box" value="2008-2009" onchange="cleanDataToDraw()" checked>
+				<label for="season9"> 2008-2009</label><br>
+				<input type="checkbox" id="season10" class="season-box" value="2009-2010" onchange="cleanDataToDraw()" checked>
+				<label for="season10"> 2009-2010</label><br>
+				<input type="checkbox" id="season11" class="season-box" value="2010-2011" onchange="cleanDataToDraw()" checked>
+				<label for="season11"> 2010-2011</label><br>
+				<input type="checkbox" id="season12" class="season-box" value="2011-2012" onchange="cleanDataToDraw()" checked>
+				<label for="season12"> 2011-2012</label><br>
+				<input type="checkbox" id="season13" class="season-box" value="2012-2013" onchange="cleanDataToDraw()" checked>
+				<label for="season13"> 2012-2013</label><br>
+				<input type="checkbox" id="season14" class="season-box" value="2013-2014" onchange="cleanDataToDraw()" checked>
+				<label for="season14"> 2013-2014</label><br>
+				<input type="checkbox" id="season15" class="season-box" value="2014-2015" onchange="cleanDataToDraw()" checked>
+				<label for="season15"> 2014-2015</label><br>
+				<input type="checkbox" id="season16" class="season-box" value="2015-2016" onchange="cleanDataToDraw()" checked>
+				<label for="season16"> 2015-2016</label><br>
+				<input type="checkbox" id="season17" class="season-box" value="2016-2017" onchange="cleanDataToDraw()" checked>
+				<label for="season17"> 2016-2017</label><br>
+				<input type="checkbox" id="season18" class="season-box" value="2017-2018" onchange="cleanDataToDraw()" checked>
+				<label for="season18"> 2017-2018</label><br>
+				<input type="checkbox" id="season19" class="season-box" value="2018-2019" onchange="cleanDataToDraw()" checked>
+				<label for="season19"> 2018-2019</label><br>
+				<br>
+			</form>
+
 			<h3>Choose League(s):</h3>
 			<form id="league-range">
 				<input type="checkbox" id="league3" value="1.Bundesliga" onchange="cleanDataToDraw()" checked>
@@ -252,6 +296,18 @@
          * FILTERING DATA ACCORDING TO CHECKBOXES CHECKED FROM USER.
          **/
 
+            // Getting the data according to seasons interested in.
+        var season_Selected = new Array();
+        // Loop through all the seasons to check if checkboxes are checked (user wants)
+        for (var i = 1; i<= 19; i++) {
+            // Creating the string to check for a specific season if box checkes
+            var season = "season"+i;
+            // if box is checked then get the seasons value and input in array.
+            if (document.getElementById(season).checked){
+                season_Selected.push(document.getElementById(season).value);
+            }
+        }
+
 
             // Getting the data according to the leagues interested in.
         var top_five = new Array();
@@ -273,6 +329,8 @@
                // data = data.filter(season => season_Selected.includes(season.Season));
                 // Including data only involved with top 5 leagues transfer ins.
                 data = data.filter(league => top_five.includes(league.League_to));
+                // Filtering the seasons the user is not interested in
+                data = data.filter(season => season_Selected.includes(season.Season));
 
 				// Aggregating the data in correct format to plot the data.
 				// We group each league with season-sum(transfer) pairs.
