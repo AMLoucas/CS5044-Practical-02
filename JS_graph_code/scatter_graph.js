@@ -148,16 +148,18 @@ function drawScatterGraph(data_for_scatter, all_positions, league_Selected) {
     for (var scatterGroup = 0; scatterGroup < league_Selected.length; scatterGroup++) {
 
         // Assign team in object for mouseover.
+        // Making sure the correct league will mouse over the data and have the legend box build
+        var loop_league = data_for_scatter[scatterGroup].key;
         // Code for this line was found: https://stackoverflow.com/questions/53098658/modify-object-values-in-an-array-of-objects
-        var DrawResult = (data_for_scatter[scatterGroup].values).map(result => Object.assign({}, result, {league: league_Selected[scatterGroup]}));
+        var data_for_points = (data_for_scatter[scatterGroup].values).map(result => Object.assign({}, result, {league: loop_league}));
 
         // Values used to create the legend box
         // KEY = <LEAGUE NAME>
-        // VALUE = <COLOUR IN SCATTER?
-        legendBox.push({key: league_Selected[scatterGroup], value: colour_Points[league_Selected[scatterGroup]]});
+        // VALUE = <COLOUR IN SCATTER>
+        legendBox.push({key: loop_league, value: colour_Points[loop_league]});
 
         Scatter_graph.selectAll("circle-dots")
-            .data(DrawResult) // Use data with the new assigned league.
+            .data(data_for_points) // Use data with the new assigned league.
             .enter()
             .append("circle")
             .attr("name", function(d) {return d.league}) // To inedx circles for each league to modify.
@@ -203,5 +205,3 @@ function drawScatterGraph(data_for_scatter, all_positions, league_Selected) {
     });
 
 }
-
-
