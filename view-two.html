@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="CSS_Code/style.css">
+    <link rel="stylesheet" href="CSS_Code/graphs.css">
     <script src="https://d3js.org/d3.v5.js"></script>
     <title> View-Two </title>
 
@@ -23,148 +24,7 @@
             width: 100%;
         }
 
-        /* Float of columns -> This will be changed by ALUN so all fit like dashboard */
-        .row {
-            min-height: 100%;
-            height: 100%;
-            width: 100%;
-        }
 
-        * {
-            box-sizing: border-box;
-        }
-
-        /* Create three unequal columns that floats next to each other */
-        .column {
-            float: left;
-            padding: 10px;
-        }
-
-        /* This is the filter column */
-        .left {
-            min-height: 100%;
-            width: 10%;
-            border-right-width: thin;
-            border-right-style: solid;
-            height: 100%;
-            text-align: left;
-
-        }
-
-        /* Plot columns. Middle = BarGraph, Right = Scatter */
-        .middle, .right {
-            min-height: 100%;
-            width: 45%;
-            height: 100%;
-
-        }
-
-        /* Clear floats after the columns */
-        .row:after {
-            content: "";
-            display: table;
-            clear: both;
-        }
-
-        /* Used for all graphs so they same size
-        --> Might change later in development
-        */
-        .bar_graph {
-            width: 90%;
-            height: 90%;
-            align-items: center;
-        }
-
-
-        /* Style for mouse over effect in scatter */
-        div.tooltip {
-            position: absolute;
-            text-align: center;
-            width: 15%;
-            height: 8%;
-            padding: 5px;
-            font: 14px sans-serif;
-            background: lightsteelblue;
-            border: 1px;
-            border-radius: 8px;
-            pointer-events: none;
-        }
-
-        /*To give the appropriate colour to the different league circles */
-        circle[name^="LaLiga"] {
-            stroke: red;
-            stroke-width: 0.5px;
-            fill: red;
-            opacity: 0.75;
-
-        }
-
-        circle[name^="Premier"] {
-            stroke: blue;
-            stroke-width: 0.5px;
-            fill: blue;
-            opacity: 0.75;
-        }
-
-        circle[name^="1.Bunde"] {
-            stroke: black;
-            stroke-width: 0.5px;
-            fill: black;
-            opacity: 0.75;
-        }
-
-        circle[name^="Serie A"] {
-            stroke: green;
-            stroke-width: 0.5px;
-            fill: green;
-            opacity: 0.75;
-        }
-
-        circle[name^="Ligue"] {
-            stroke: orange;
-            stroke-width: 0.5px;
-            fill: orange;
-            opacity: 0.75;
-        }
-
-        /* To give different colour to the lines in line graph.
-        Could not use circle CSS because for bath we need the fill to be none
-         */
-        [name^="LaLiga"] {
-            stroke: red;
-            stroke-width: 1.5px;
-            fill: none;
-            opacity: 0.75;
-
-        }
-
-        [name^="Premier"] {
-            stroke: blue;
-            stroke-width: 1.5px;
-            fill: none;
-            opacity: 0.75;
-        }
-
-        [name^="1.Bunde"] {
-            stroke: black;
-            stroke-width: 1.5px;
-            fill: none;
-            opacity: 0.75;
-        }
-
-        [name^="Serie A"] {
-            stroke: green;
-            stroke-width: 1.5px;
-            fill: none;
-            opacity: 0.75;
-        }
-
-        [name^="Ligue"] {
-            stroke: orange;
-            stroke-width: 1.5px;
-            fill: none;
-            opacity: 0.75;
-        }
 
 
     </style>
@@ -182,10 +42,8 @@
     </ul>
 </nav>
 
-<div class="row">
 
-    <!-- Checkbox list, so user chooses what seasons the data will be showing. -->
-    <div class="column left">
+
         <!-- checkboxes for the season filtering -->
         <h3>Choose Season(s):</h3>
         <form id="Range-Seasons">
@@ -245,23 +103,17 @@
             <label for="league4">Serie A</label><br>
 
         </form>
-    </div>
 
 
-    <div class="column middle">
-        <!-- Bar graph area -->
-        <div id="Bar_graph" class="bar_graph"> </div>
-    </div>
+
+    <!-- Bar graph area -->
+    <div id="Bar_graph" class="bar_graph"> </div>
 
 
-    <div class="column right">
 
-        <!-- Lollipop graph area -->
-        <div id="lollipop_graph" class="lollipop_graph"> </div>
+    <!-- Lollipop graph area -->
+    <div id="lollipop_graph" class="lollipop_graph"> </div>
 
-
-    </div>
-</div>
 
     <!-- Line graph area -->
     <div id="line_graph" class="line_graph"> </div>
@@ -274,183 +126,7 @@
 </body>
 
 <!-- Script organizing the data to visualize later. -->
-<script>
-    //style="width: 100%; height: 200%"
-    // Reading in the data.
-    var dataPath = "data/top250-00-19.csv";
-
-    // Margin variable to use to position visualisation more precise
-    var margin = { top: 75, bottom: 100, left: 75, right: 50};
-    // Getting height and width of the div elements the graphs will be inputted in.
-    var width = document.getElementById('Bar_graph').getBoundingClientRect().width - margin.left - margin.right;	//width of the svg element (in pixels)
-    var height = document.getElementById('Bar_graph').getBoundingClientRect().height - margin.top - margin.bottom ; //height of the svg element
-
-    // Calling function to draw the graphs needed.
-    cleanDataToDraw();
-
-    function cleanDataToDraw() {
-
-        /**
-         * FILTERING DATA ACCORDING TO CHECKBOXES CHECKED FROM USER.
-         **/
-
-                // Getting the data according to seasons interested in.
-        var season_Selected = new Array();
-        // Loop through all the seasons to check if checkboxes are checked (user wants)
-        for (var i = 1; i <= 19; i++) {
-            // Creating the string to check for a specific season if box checkes
-            var season = "season" + i;
-            // if box is checked then get the seasons value and input in array.
-            if (document.getElementById(season).checked) {
-                season_Selected.push(document.getElementById(season).value);
-            }
-        }
-
-        // Getting the data according to the leagues interested in.
-        var league_Selected = new Array();
-        // Loop through all top 5 leagues to check if checkboxes are checked (user wants)
-        for (var i = 1; i <= 5; i++) {
-            // Creating the string to check for a specific league if box checked
-            var league = "league" + i;
-            // If the specific checkbox is checkes then we add the value in array.
-            if (document.getElementById(league).checked) {
-                league_Selected.push(document.getElementById(league).value);
-            }
-        }
-
-        /**
-         * Reading the data and wrangling/aggregating it in appropriate format for each graph that will be implemented.
-         * In total we nesting 5 subsets of the whole data
-         * BAR GRAPH => 1 dataset
-         * LOLLIPOP GRAPH => 1 dataset
-         * LINE GRAPH => 1 dataset
-         * SCATTER PLOT => 2 dataset
-         */
-        d3.csv(dataPath)
-                .then(function (data) {
-                    /**
-                     * Filtering the data and keeping observations only with seasons and leagues interested in
-                     **/
-
-                    data = data.filter(season => season_Selected.includes(season.Season));
-                    data = data.filter(league => league_Selected.includes(league.League_to));
-
-
-                    /**
-                     * Data that will be used to create the bar graph
-                     **/
-
-                    var dataBy_Season = d3.nest()
-                            .key(function (d) {
-                                return d.Season;
-                            })
-                            .rollup(function (leaves) {
-                                //  Specifying what attribute to sum for the bar chart (Transfer_fee)
-                                return d3.sum(leaves, function (d) {
-                                    //  Need to transform numbers to int because they are strings now.
-                                    return parseInt(d.Transfer_fee)
-
-                                })
-                            })
-                            .entries(data); // Specifying on what data to do the grouping
-                    // Function to draw a bar graph.
-                    drawBarGraph(dataBy_Season);
-
-                    /**
-                     * Data being used to create the lollipop
-                     */
-                    var dataFor_Lollipop = d3.nest()
-                            .key(function (d) {
-                                return d.Position;
-                            })
-                            .rollup(function (leaves) {
-                                return d3.sum(leaves, function (d) {
-                                    return parseInt(d.Transfer_fee);
-                                })
-                            })
-                            .entries(data);
-
-                    // Function to draw the lollipop
-                    drawLollipop(dataFor_Lollipop);
-
-                    /**
-                     * Data being used to create the line plot.
-                     */
-                    var dataFor_Line = d3.nest()
-                            .key(function (d) {
-                                return d.League_to;
-                            })
-                            .key(function (d) {
-                                return d.Season;
-                            })
-                            .rollup(function (leaves) {
-                                //  Specifying what attribute to sum for the bar chart (Transfer_fee)
-                                return d3.sum(leaves, function (d) {
-                                    //  Need to tranform numbers to int because they are strings now.
-                                    return parseInt(d.Transfer_fee)
-
-                                })
-                            })
-                            .entries(data); // Specifying on what data to do the grouping
-
-                    // Function to draw a line graph
-                    drawSeasonLine(dataFor_Line);
-
-                    /**
-                     * Dataset that is being used to create the scatter plot
-                     * Main dataset that will be used
-                     **/
-
-                    var data_for_scatter = d3.nest()
-                            .key(function (d) {
-                                //  Specifying how we want to do the grouping
-                                return d.League_to;
-                            })
-                            .key(function (e) {
-                                // Specifying the second grouping looking for.
-                                return e.Position;
-                            })
-                            .rollup(function (leaves) {
-                                //  Specifying what attribute to sum for the bar chart (Transfer_fee)
-                                return d3.sum(leaves, function (d) {
-                                    //  Need to tranform numbers to int because they are strings now.
-                                    return parseInt(d.Transfer_fee)
-
-                                })
-                            })
-                            .entries(data); // Specifying on what data to do the grouping
-
-                    /**
-                     * Extra dataset for the scatter so we can have all positions available for each group of points (leagues)
-                     * Bundesliga has extra position 'sweeper'
-                     * Ligue1 has extra position 'forward'
-                     **/
-
-                    var all_positions = d3.nest()
-                            .key(function (e) {
-                                // Specifying the second grouping looking for.
-                                return e.Position;
-                            })
-                            .rollup(function (leaves) {
-                                //  Specifying what attribute to sum for the bar chart (Transfer_fee)
-                                return d3.sum(leaves, function (d) {
-                                    //  Need to tranform numbers to int because they are strings now.
-                                    return parseInt(d.Transfer_fee)
-
-                                })
-                            })
-                            .entries(data); // Specifying on what data to do the grouping
-
-                    // Function to draw a bar graph.
-                    drawScatterGraph(data_for_scatter, all_positions, league_Selected);
-
-
-                });
-    };
-
-
-
-</script>
+<script src="JS_graph_code/reading_data.js"></script>
 <!-- Function that creates the bar graph -->
 <script src="JS_graph_code/bar_graph.js"></script>
 <!-- Function that creates the lollypop graph -->
