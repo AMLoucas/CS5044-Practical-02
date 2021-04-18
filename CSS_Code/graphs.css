@@ -1,0 +1,107 @@
+/*
+Mouse over effect of all the graphs.
+All graphs use the same mouse-over effect tooltip.
+ */
+div.tooltip {
+    position: absolute;
+    text-align: center;
+    width: 15%;
+    height: 8%;
+    padding: 5px;
+    font: 14px sans-serif;
+    background: lightsteelblue;
+    border: 1px;
+    border-radius: 8px;
+    pointer-events: none;
+}
+
+/*
+Used to have appropriate colours for the scatter and line graph of each league.
+Used this approach, because if one team is filtered, to always have the same color's
+across all league.
+*/
+circle[name^="LaLiga"] {
+    stroke: red;
+    stroke-width: 0.5px;
+    fill: red;
+    opacity: 0.75;
+
+}
+
+circle[name^="Premier"] {
+    stroke: blue;
+    stroke-width: 0.5px;
+    fill: blue;
+    opacity: 0.75;
+}
+
+circle[name^="1.Bunde"] {
+    stroke: black;
+    stroke-width: 0.5px;
+    fill: black;
+    opacity: 0.75;
+}
+
+circle[name^="Serie A"] {
+    stroke: green;
+    stroke-width: 0.5px;
+    fill: green;
+    opacity: 0.75;
+}
+
+circle[name^="Ligue"] {
+    stroke: orange;
+    stroke-width: 0.5px;
+    fill: orange;
+    opacity: 0.75;
+}
+
+/*
+Used for the line graph. The same code for the scatter (cricle) However for the
+path we do not want to ha a fill, or else it would become an area graph.
+ */
+[name^="LaLiga"] {
+    stroke: red;
+    stroke-width: 1.5px;
+    fill: none;
+    opacity: 0.75;
+
+}
+
+[name^="Premier"] {
+    stroke: blue;
+    stroke-width: 1.5px;
+    fill: none;
+    opacity: 0.75;
+}
+
+[name^="1.Bunde"] {
+    stroke: black;
+    stroke-width: 1.5px;
+    fill: none;
+    opacity: 0.75;
+}
+
+[name^="Serie A"] {
+    stroke: green;
+    stroke-width: 1.5px;
+    fill: none;
+    opacity: 0.75;
+}
+
+[name^="Ligue"] {
+    stroke: orange;
+    stroke-width: 1.5px;
+    fill: none;
+    opacity: 0.75;
+}
+
+/*
+All the graphs use this CSS code, so they all have same size of svg element. For this reason i call
+one graph and use same dimensions for all.
+ */
+.bar_graph {
+    width: 90%;
+    height: 90%;
+    align-items: center;
+}
