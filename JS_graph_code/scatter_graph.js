@@ -74,6 +74,8 @@ function drawScatterGraph(data_for_scatter, all_positions, league_Selected) {
         .attr("transform", "translate(0, " + height + ")")
         .call(d3.axisBottom(Scatter_xScale)) // Specifying x-axis to be on bottom.
         .selectAll("text")
+        .attr("dx", "-.8em")
+        .attr("dy", ".15em")
         .attr("transform", "translate(5, 0)rotate(-45)")
         .style("text-anchor", "end");
 
