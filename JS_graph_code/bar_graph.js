@@ -51,7 +51,7 @@ function drawBarGraph(data_for_bar) {
         .call(d3.axisLeft(Bar_yScale)); // Specifying y-axis to be on left.
 
     /**
-     * Adding labels on the axis and title on the fraph
+     * Adding labels on the axis and title on the graph
      */
     // ADDING TITLE ON X-AXIS.
     Bar_SVG.append("text")

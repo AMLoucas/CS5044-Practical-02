@@ -26,7 +26,7 @@ function drawLollipop(dataFor_Lollipop) {
 
     // Getting the minimum transfer fee and the maximum.
     var min_max_fee = d3.extent(transfer, function (d) {
-        return parseInt(d);
+        return parseInt(d/1000000);
     });
 
     // Since transfer fee is linear, we are scaling linearly.
@@ -86,7 +86,7 @@ function drawLollipop(dataFor_Lollipop) {
             "translate(" + (width / 2) + " ," +
             (height + margin.top) + ")")
         .style("text-anchor", "middle")
-        .text("TRANSFER FEE'S (€)");
+        .text("TRANSFER FEE'S IN MILLIONS(€)");
 
     /**
      * Adding the Y-AXIS on the plot.
@@ -128,7 +128,7 @@ function drawLollipop(dataFor_Lollipop) {
         .data(dataFor_Lollipop)
         .enter()
         .append("line")
-        .attr("x1", function(d) { return Lollipop_xScale(d.value); })
+        .attr("x1", function(d) { return Lollipop_xScale(parseInt(d.value/1000000)); })
         .attr("x2", Lollipop_xScale(0))
         .attr("y1", function(d) { return Lollipop_yScale(d.key); })
         .attr("y2", function(d) { return Lollipop_yScale(d.key); })
@@ -145,7 +145,7 @@ function drawLollipop(dataFor_Lollipop) {
         .data(dataFor_Lollipop)
         .enter()
         .append("circle")
-        .attr("cx", function(d) { return Lollipop_xScale(d.value); })
+        .attr("cx", function(d) { return Lollipop_xScale(parseInt(d.value/1000000)); })
         .attr("cy", function(d) { return Lollipop_yScale(d.key); })
         .attr("r", "7")
         .style("fill", "steelblue")
