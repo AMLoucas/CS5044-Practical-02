@@ -24,12 +24,16 @@
 			width: 100%;
 		}
 
-		.grid-menu {
-			grid-area: menu;
+		.full-content {
+			width: 100%;
+			min-height: 100%;
+			height: 100%;
+			display: flex;
 		}
+
 		.grid-item-bar {
 			grid-area: main;
-			grid-column: span 2;
+			grid-column: span 1;
 			min-height: 100%;
 			height: 100%;
 			width: 100%;
@@ -37,19 +41,19 @@
 		}
 		.grid-item-lollipop {
 			grid-area: main-right;
-			grid-column: span 2;
+			grid-column: span 1;
 			min-height: 100%;
 			height: 100%;
 		}
 		.gird-area-line {
 			grid-area: footer;
-			grid-column: span 2;
+			grid-column: span 1;
 			min-height: 100%;
 			height: 100%;
 		}
 		.grid-area-scatter {
 			grid-area: footer-rigth;
-			grid-column: span 2;
+			grid-column: span 1;
 			min-height: 100%;
 			height: 100%;
 			width: 100%;
@@ -62,8 +66,8 @@
 			height: 100%;
 			width: 100%;
 			grid-template-areas:
-					'menu main main-right'
-					'menu footer footer-rigth';
+					'main main-right'
+					'footer footer-rigth';
 			grid-column-gap: 0;
 
 
@@ -77,6 +81,8 @@
 
 
 		}
+
+
 
 
 
@@ -96,78 +102,80 @@
 	</ul>
 </nav>
 
-<!-- Creating a grid-container to have graphs next to the menu -->
-<div class="grid-container">
-
-
+<div class="full-content">
 	<!-- The Filter-menu area, this will be floating on left. -->
 	<div id="Filter-menu"  class="grid-menu">
-	<p>Choose Season(s):</p>
-	<form id="Range-Seasons">
-		<input type="checkbox" id="season1" class="season-box" value="2000-2001" onchange="cleanDataToDraw()" checked>
-		<label for="season1"> 2000-2001</label><br>
-		<input type="checkbox" id="season2" class="season-box" value="2001-2002" onchange="cleanDataToDraw()" checked>
-		<label for="season2"> 2001-2002</label><br>
-		<input type="checkbox" id="season3" class="season-box" value="2002-2003" onchange="cleanDataToDraw()" checked>
-		<label for="season3"> 2003-2003</label><br>
-		<input type="checkbox" id="season4" class="season-box" value="2003-2004" onchange="cleanDataToDraw()" checked>
-		<label for="season4"> 2003-2004</label><br>
-		<input type="checkbox" id="season5" class="season-box" value="2004-2005" onchange="cleanDataToDraw()" checked>
-		<label for="season5"> 2005-2005</label><br>
-		<input type="checkbox" id="season6" class="season-box" value="2005-2006" onchange="cleanDataToDraw()" checked>
-		<label for="season6"> 2005-2006</label><br>
-		<input type="checkbox" id="season7" class="season-box" value="2006-2007" onchange="cleanDataToDraw()" checked>
-		<label for="season7"> 2006-2007</label><br>
-		<input type="checkbox" id="season8" class="season-box" value="2007-2008" onchange="cleanDataToDraw()" checked>
-		<label for="season8"> 2007-2008</label><br>
-		<input type="checkbox" id="season9" class="season-box" value="2008-2009" onchange="cleanDataToDraw()" checked>
-		<label for="season9"> 2008-2009</label><br>
-		<input type="checkbox" id="season10" class="season-box" value="2009-2010" onchange="cleanDataToDraw()" checked>
-		<label for="season10"> 2009-2010</label><br>
-		<input type="checkbox" id="season11" class="season-box" value="2010-2011" onchange="cleanDataToDraw()" checked>
-		<label for="season11"> 2010-2011</label><br>
-		<input type="checkbox" id="season12" class="season-box" value="2011-2012" onchange="cleanDataToDraw()" checked>
-		<label for="season12"> 2011-2012</label><br>
-		<input type="checkbox" id="season13" class="season-box" value="2012-2013" onchange="cleanDataToDraw()" checked>
-		<label for="season13"> 2012-2013</label><br>
-		<input type="checkbox" id="season14" class="season-box" value="2013-2014" onchange="cleanDataToDraw()" checked>
-		<label for="season14"> 2013-2014</label><br>
-		<input type="checkbox" id="season15" class="season-box" value="2014-2015" onchange="cleanDataToDraw()" checked>
-		<label for="season15"> 2014-2015</label><br>
-		<input type="checkbox" id="season16" class="season-box" value="2015-2016" onchange="cleanDataToDraw()" checked>
-		<label for="season16"> 2015-2016</label><br>
-		<input type="checkbox" id="season17" class="season-box" value="2016-2017" onchange="cleanDataToDraw()" checked>
-		<label for="season17"> 2016-2017</label><br>
-		<input type="checkbox" id="season18" class="season-box" value="2017-2018" onchange="cleanDataToDraw()" checked>
-		<label for="season18"> 2017-2018</label><br>
-		<input type="checkbox" id="season19" class="season-box" value="2018-2019" onchange="cleanDataToDraw()" checked>
-		<label for="season19"> 2018-2019</label><br>
-		<br>
-	</form>
+		<p>Choose Season(s):</p>
+		<form id="Range-Seasons">
+			<input type="checkbox" id="season1" class="season-box" value="2000-2001" onchange="cleanDataToDraw()" checked>
+			<label for="season1"> 2000-2001</label><br>
+			<input type="checkbox" id="season2" class="season-box" value="2001-2002" onchange="cleanDataToDraw()" checked>
+			<label for="season2"> 2001-2002</label><br>
+			<input type="checkbox" id="season3" class="season-box" value="2002-2003" onchange="cleanDataToDraw()" checked>
+			<label for="season3"> 2003-2003</label><br>
+			<input type="checkbox" id="season4" class="season-box" value="2003-2004" onchange="cleanDataToDraw()" checked>
+			<label for="season4"> 2003-2004</label><br>
+			<input type="checkbox" id="season5" class="season-box" value="2004-2005" onchange="cleanDataToDraw()" checked>
+			<label for="season5"> 2005-2005</label><br>
+			<input type="checkbox" id="season6" class="season-box" value="2005-2006" onchange="cleanDataToDraw()" checked>
+			<label for="season6"> 2005-2006</label><br>
+			<input type="checkbox" id="season7" class="season-box" value="2006-2007" onchange="cleanDataToDraw()" checked>
+			<label for="season7"> 2006-2007</label><br>
+			<input type="checkbox" id="season8" class="season-box" value="2007-2008" onchange="cleanDataToDraw()" checked>
+			<label for="season8"> 2007-2008</label><br>
+			<input type="checkbox" id="season9" class="season-box" value="2008-2009" onchange="cleanDataToDraw()" checked>
+			<label for="season9"> 2008-2009</label><br>
+			<input type="checkbox" id="season10" class="season-box" value="2009-2010" onchange="cleanDataToDraw()" checked>
+			<label for="season10"> 2009-2010</label><br>
+			<input type="checkbox" id="season11" class="season-box" value="2010-2011" onchange="cleanDataToDraw()" checked>
+			<label for="season11"> 2010-2011</label><br>
+			<input type="checkbox" id="season12" class="season-box" value="2011-2012" onchange="cleanDataToDraw()" checked>
+			<label for="season12"> 2011-2012</label><br>
+			<input type="checkbox" id="season13" class="season-box" value="2012-2013" onchange="cleanDataToDraw()" checked>
+			<label for="season13"> 2012-2013</label><br>
+			<input type="checkbox" id="season14" class="season-box" value="2013-2014" onchange="cleanDataToDraw()" checked>
+			<label for="season14"> 2013-2014</label><br>
+			<input type="checkbox" id="season15" class="season-box" value="2014-2015" onchange="cleanDataToDraw()" checked>
+			<label for="season15"> 2014-2015</label><br>
+			<input type="checkbox" id="season16" class="season-box" value="2015-2016" onchange="cleanDataToDraw()" checked>
+			<label for="season16"> 2015-2016</label><br>
+			<input type="checkbox" id="season17" class="season-box" value="2016-2017" onchange="cleanDataToDraw()" checked>
+			<label for="season17"> 2016-2017</label><br>
+			<input type="checkbox" id="season18" class="season-box" value="2017-2018" onchange="cleanDataToDraw()" checked>
+			<label for="season18"> 2017-2018</label><br>
+			<input type="checkbox" id="season19" class="season-box" value="2018-2019" onchange="cleanDataToDraw()" checked>
+			<label for="season19"> 2018-2019</label><br>
+			<br>
+		</form>
 
-	<!-- Checkboxes for Football League filtering -->
-	<p>Choose League(s):</p>
-	<form id="league-range">
-		<input type="checkbox" id="league3" value="1.Bundesliga" onchange="cleanDataToDraw()" checked>
-		<label for="league3">Bundesliga</label><br>
-		<input type="checkbox" id="league5" value="LaLiga" onchange="cleanDataToDraw()" checked>
-		<label for="league5">LaLiga</label><br>
-		<input type="checkbox" id="league2" value="Ligue 1" onchange="cleanDataToDraw()" checked>
-		<label for="league2">Ligue 1</label><br>
-		<input type="checkbox" id="league1" value="Premier League" onchange="cleanDataToDraw()" checked>
-		<label for="league1">Premier League</label><br>
-		<input type="checkbox" id="league4" value="Serie A" onchange="cleanDataToDraw()" checked>
-		<label for="league4">Serie A</label><br>
+		<!-- Checkboxes for Football League filtering -->
+		<p>Choose League(s):</p>
+		<form id="league-range">
+			<input type="checkbox" id="league3" value="1.Bundesliga" onchange="cleanDataToDraw()" checked>
+			<label for="league3">Bundesliga</label><br>
+			<input type="checkbox" id="league5" value="LaLiga" onchange="cleanDataToDraw()" checked>
+			<label for="league5">LaLiga</label><br>
+			<input type="checkbox" id="league2" value="Ligue 1" onchange="cleanDataToDraw()" checked>
+			<label for="league2">Ligue 1</label><br>
+			<input type="checkbox" id="league1" value="Premier League" onchange="cleanDataToDraw()" checked>
+			<label for="league1">Premier League</label><br>
+			<input type="checkbox" id="league4" value="Serie A" onchange="cleanDataToDraw()" checked>
+			<label for="league4">Serie A</label><br>
 
-	</form>
+		</form>
 	</div>
 
 
-	<!-- These are the main areas where the graphs-plots will be showing -->
-	<div id="Bar_graph"  class="grid-item-bar"></div>
-	<div id="lollipop_graph" class="grid-item-lollipop"></div>
-	<div id="line_graph" class="gird-area-line "></div>
-	<div id="Scatter"class="grid-area-scatter"></div>
+
+
+	<!-- Creating a grid-container to have graphs next to the menu -->
+	<div class="grid-container">
+		<!-- These are the main areas where the graphs-plots will be showing -->
+		<div id="Bar_graph"  class="grid-item-bar"></div>
+		<div id="lollipop_graph" class="grid-item-lollipop"></div>
+		<div id="line_graph" class="gird-area-line "></div>
+		<div id="Scatter" class="grid-area-scatter"></div>
+	</div>
 
 </div>
 
