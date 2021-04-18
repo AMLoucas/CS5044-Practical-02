@@ -21,39 +21,23 @@ Used this approach, because if one team is filtered, to always have the same col
 across all league.
 */
 circle[name^="LaLiga"] {
-    stroke: red;
-    stroke-width: 0.5px;
     fill: red;
-    opacity: 0.75;
-
 }
 
 circle[name^="Premier"] {
-    stroke: blue;
-    stroke-width: 0.5px;
     fill: blue;
-    opacity: 0.75;
 }
 
 circle[name^="1.Bunde"] {
-    stroke: black;
-    stroke-width: 0.5px;
     fill: black;
-    opacity: 0.75;
 }
 
 circle[name^="Serie A"] {
-    stroke: green;
-    stroke-width: 0.5px;
     fill: green;
-    opacity: 0.75;
 }
 
 circle[name^="Ligue"] {
-    stroke: orange;
-    stroke-width: 0.5px;
     fill: orange;
-    opacity: 0.75;
 }
 
 /*
