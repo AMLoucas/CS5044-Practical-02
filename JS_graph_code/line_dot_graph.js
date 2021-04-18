@@ -80,7 +80,9 @@ function drawSeasonLine(dataFor_Line) {
         .attr("transform", "translate(0, " + height + ")")
         .call(d3.axisBottom(Line_xScale)) // Specifying x-axis to be on bottom.
         .selectAll("text")
-        .attr("transform", "translate(5, 0)rotate(-60)")
+        .attr("dx", "-.8em")
+        .attr("dy", ".15em")
+        .attr("transform", "translate(5, 0)rotate(-45)")
         .style("text-anchor", "end");
 
     // Adding title for the x-axis.
