@@ -94,13 +94,18 @@
         }
 
         #toggleMenu {
+            color: gray;
             display: block;
             font-size: 60px;
-            border: none;
+            border: 3px solid #e4e4e4;
+            border-radius: 7px;
+            margin-left: 10px;
+            padding: 2px;
             background: transparent;
         }
 
         #toggleMenu:hover {
+            background: #e4e4e4;
             transform: scale(1.2);
             transition: 0.4s ease-in-out;
         }
@@ -130,7 +135,7 @@
 <div class="full-content">
 	<!-- The Filter-menu area, this will be floating on left. -->
 	<div id="Filter-menu"  class="grid-menu">
-		<p>Choose Season(s):</p>
+		<p><strong>Choose Season(s):</strong></p>
 		<form id="Range-Seasons">
             <div class="checkbox">
                 <input type="checkbox" id="season1" class="season-box" value="2000-2001" onchange="cleanDataToDraw()" checked>
@@ -208,11 +213,10 @@
                 <input type="checkbox" id="season19" class="season-box" value="2018-2019" onchange="cleanDataToDraw()" checked>
                 <label for="season19"> 2018-2019</label><br>
             </div>
-			<br>
 		</form>
 
 		<!-- Checkboxes for Football League filtering -->
-		<p>Choose League(s):</p>
+		<p><strong>Choose League(s):</strong></p>
 		<form id="league-range">
             <div class="checkbox">
                 <input type="checkbox" id="league3" value="1.Bundesliga" onchange="cleanDataToDraw()" checked>

@@ -3,16 +3,16 @@ Mouse over effect of all the graphs.
 All graphs use the same mouse-over effect tooltip.
  */
 div.tooltip {
-    position: absolute;
-    text-align: center;
-    width: 15%;
-    height: 8%;
-    padding: 5px;
-    font: 14px sans-serif;
-    background: lightsteelblue;
-    border: 1px;
-    border-radius: 8px;
-    pointer-events: none;
+  position: absolute;
+  text-align: center;
+  width: 15%;
+  height: 8%;
+  padding: 5px;
+  font: 14px sans-serif;
+  background: lightsteelblue;
+  border: 1px;
+  border-radius: 8px;
+  pointer-events: none;
 }
 
 /*
@@ -20,64 +20,63 @@ Used to have appropriate colours for the scatter and line graph of each league.
 Used this approach, because if one team is filtered, to always have the same color's
 across all league.
 */
-circle[name^="LaLiga"] {
-    fill: red;
+circle[name^='LaLiga'] {
+  fill: red;
 }
 
-circle[name^="Premier"] {
-    fill: blue;
+circle[name^='Premier'] {
+  fill: blue;
 }
 
-circle[name^="1.Bunde"] {
-    fill: black;
+circle[name^='1.Bunde'] {
+  fill: black;
 }
 
-circle[name^="Serie A"] {
-    fill: green;
+circle[name^='Serie A'] {
+  fill: green;
 }
 
-circle[name^="Ligue"] {
-    fill: orange;
+circle[name^='Ligue'] {
+  fill: orange;
 }
 
 /*
 Used for the line graph. The same code for the scatter (cricle) However for the
 path we do not want to ha a fill, or else it would become an area graph.
  */
-[name^="LaLiga"] {
-    stroke: red;
-    stroke-width: 1.5px;
-    fill: none;
-    opacity: 0.75;
-
+[name^='LaLiga'] {
+  stroke: red;
+  stroke-width: 1.5px;
+  fill: none;
+  opacity: 0.75;
 }
 
-[name^="Premier"] {
-    stroke: blue;
-    stroke-width: 1.5px;
-    fill: none;
-    opacity: 0.75;
+[name^='Premier'] {
+  stroke: blue;
+  stroke-width: 1.5px;
+  fill: none;
+  opacity: 0.75;
 }
 
-[name^="1.Bunde"] {
-    stroke: black;
-    stroke-width: 1.5px;
-    fill: none;
-    opacity: 0.75;
+[name^='1.Bunde'] {
+  stroke: black;
+  stroke-width: 1.5px;
+  fill: none;
+  opacity: 0.75;
 }
 
-[name^="Serie A"] {
-    stroke: green;
-    stroke-width: 1.5px;
-    fill: none;
-    opacity: 0.75;
+[name^='Serie A'] {
+  stroke: green;
+  stroke-width: 1.5px;
+  fill: none;
+  opacity: 0.75;
 }
 
-[name^="Ligue"] {
-    stroke: orange;
-    stroke-width: 1.5px;
-    fill: none;
-    opacity: 0.75;
+[name^='Ligue'] {
+  stroke: orange;
+  stroke-width: 1.5px;
+  fill: none;
+  opacity: 0.75;
 }
 
 /*
@@ -85,8 +84,8 @@ All the graphs use this CSS code, so they all have same size of svg element. For
 one graph and use same dimensions for all.
  */
 .bar_graph {
-    width: 100%;
-    min-height: 100%;
-    height: 100%;
-    align-items: center;
+  width: 100%;
+  min-height: 100%;
+  height: 100%;
+  align-items: center;
 }
