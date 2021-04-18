@@ -79,8 +79,6 @@
 					'main main-right'
 					'footer footer-rigth';
 			grid-column-gap: 0;
-
-
 		}
 
 		.grid-container > div {
@@ -280,6 +278,7 @@
             if (sideBar.style.display !== 'none') {
                 sideBar.style.display = 'none';
                 menuBtn.innerHTML = `<i class="fas fa-angle-right"></i>`;
+                document.querySelector('.grid-container').style.width = '100%';
             }
             else {
                 sideBar.style.display = 'block';
