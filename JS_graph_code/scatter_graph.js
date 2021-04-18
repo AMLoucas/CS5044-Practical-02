@@ -190,16 +190,16 @@ function drawScatterGraph(data_for_scatter, all_positions, league_Selected) {
     var i = 1;
     legendBox.forEach(function(d){
         Scatter_graph.append("rect")
-            .attr("width", 15)
-            .attr("height", 15)
+            .attr("width", 10)
+            .attr("height", 10)
             .attr("x", width - 80)
-            .attr("y", i * 25) // Changing height of rect so they dont overlap
+            .attr("y", i * 15) // Changing height of rect so they dont overlap
             .style("fill", d.value);
         Scatter_graph.append("text")
             .attr("x", width - 60)
-            .attr("y", i * 25 + 8) // Chaning height for text so they dont overlap. +8 is needed to is in line with the rect.
+            .attr("y", i * 15 + 8) // Chaning height for text so they dont overlap. +8 is needed to is in line with the rect.
             .text(d.key)
-            .style("font-size", "15px")
+            .style("font-size", "10px")
             .attr("alignment-baseline","middle");
         i += 1;
     });
