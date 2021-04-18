@@ -42,7 +42,7 @@ function drawScatterGraph(data_for_scatter, all_positions, league_Selected) {
 
     // Finding the min/max of Y-AXIS to to obtain the domain
     var y_ax = d3.extent(transfer_per, function (d) {
-        return parseInt(d);
+        return parseInt(d/1000000);
     });
 
     // Constructing the Y-AXIS
@@ -90,17 +90,18 @@ function drawScatterGraph(data_for_scatter, all_positions, league_Selected) {
     Scatter_graph.append("text")
         .attr("transform",
             "translate(" + (width / 2) + " ," +
-            (height + margin.top) + ")")
+            (height + margin.bottom) + ")")
         .style("text-anchor", "middle")
+        .style("font-size", ".80em")
         .text("PLAYERS POSITION");
 
     //ADDING TITLE ON Y-AXIS
     Scatter_graph.append("text")
         .attr("y", -5)
-        .attr("x", +5)
+        .attr("x", +20)
         .style("text-anchor", "middle")
-        .style("font-size", "1em")
-        .text("TRANSFER FEE'S (€)");
+        .style("font-size", ".80em")
+        .text("TRANSFER FEE'S (€)M");
 
     // Adding graph title.
     Scatter_graph.append("text")
@@ -108,7 +109,7 @@ function drawScatterGraph(data_for_scatter, all_positions, league_Selected) {
         .attr("x", (width / 2))
         .attr("y", 0 - (margin.top / 2))
         .attr("text-anchor", "middle")
-        .style("font-size", "20px")
+        .style("font-size", "1em")
         .text("TRANSFER FEES SPEND(€) BY LEAGUE & POSITION");
 
     // Sort the array of objects to user for loop for each group of scatter
@@ -164,7 +165,7 @@ function drawScatterGraph(data_for_scatter, all_positions, league_Selected) {
             .append("circle")
             .attr("name", function(d) {return d.league}) // To inedx circles for each league to modify.
             .attr("cx", function (d) {return Scatter_xScale(d.key);}) // Circle on y scale start
-            .attr("cy", function (d) {return Scatter_yScale(parseInt(d.value))}) // Circle on x scale start
+            .attr("cy", function (d) {return Scatter_yScale(parseInt(d.value/1000000))}) // Circle on x scale start
             .attr("r", 6)
             .on("mouseover", function (d) {
                 div.transition()

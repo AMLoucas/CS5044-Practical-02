@@ -48,7 +48,7 @@ function drawSeasonLine(dataFor_Line) {
 
     // Getting the minimum transfer fee and the maximum.
     var min_max_fee = d3.extent(trasnfer_fees, function (d) {
-        return parseInt(d);
+        return parseInt(d/1000000);
     });
 
     // Since the transfer fees is a continuous scale, we will scale linear.
@@ -80,17 +80,16 @@ function drawSeasonLine(dataFor_Line) {
         .attr("transform", "translate(0, " + height + ")")
         .call(d3.axisBottom(Line_xScale)) // Specifying x-axis to be on bottom.
         .selectAll("text")
-        .attr("dx", "-.8em")
-        .attr("dy", "-.55em")
-        .attr("transform", "translate(5, 0)rotate(-45)")
+        .attr("transform", "translate(5, 0)rotate(-60)")
         .style("text-anchor", "end");
 
     // Adding title for the x-axis.
     Line_SVG.append("text")
         .attr("transform",
             "translate(" + (width / 2) + " ," +
-            (height + margin.top) + ")")
+            (height + margin.bottom) + ")")
         .style("text-anchor", "middle")
+        .style("font-size", ".80em")
         .text("SEASON");
 
     /**
@@ -105,10 +104,10 @@ function drawSeasonLine(dataFor_Line) {
     // Adding a title for the y-axis.
     Line_SVG.append("text")
         .attr("y", -5)
-        .attr("x", +5)
+        .attr("x", +20)
         .style("text-anchor", "middle")
-        .style("font-size", "1em")
-        .text("TRANSFER FEE'S (€)");
+        .style("font-size", ".80em")
+        .text("TRANSFER FEE'S (€)M");
 
     /**
      * Adding a plot title for the graph.
@@ -118,7 +117,7 @@ function drawSeasonLine(dataFor_Line) {
         .attr("x", (width / 2))
         .attr("y", 0 - (margin.top / 2))
         .attr("text-anchor", "middle")
-        .style("font-size", "20px")
+        .style("font-size", "1em")
         .text("TRANSFER FEES SPEND(€) BY EACH LEAGUE & SEASON");
 
     /**
@@ -141,7 +140,7 @@ function drawSeasonLine(dataFor_Line) {
             .attr("stroke-width", 1.5)
             .attr("d", d3.line()
                 .x(function(d) { return Line_xScale(d.key) })
-                .y(function(d) { return Line_yScale(d.value) })
+                .y(function(d) { return Line_yScale(d.value/1000000) })
             );
 
         // Capturing data to append appropriate colour in circles.
@@ -159,7 +158,7 @@ function drawSeasonLine(dataFor_Line) {
             .append("circle")
             .attr("name", function(d) {return d.league})
             .attr("cx", function(d) { return Line_xScale(d.key); })
-            .attr("cy", function(d) { return Line_yScale(d.value); })
+            .attr("cy", function(d) { return Line_yScale(d.value/1000000); })
             .attr("r", "4")
             .on("mouseover", function(d) { // Adding mouseover effect to have details on demand.
                 div.transition()

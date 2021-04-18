@@ -59,13 +59,15 @@ function drawBarGraph(data_for_bar) {
             "translate(" + (width/2) + " ," +
             (height + margin.top ) + ")")
         .style("text-anchor", "middle")
+        .style("font-size", ".80em")
         .text("TRANSFER FEE'S IN MILLIONS(€)");
 
     //ADDING TITLE ON Y-AXIS
     Bar_SVG.append("text")
         .attr("y", -5)
+        .attr("x", +5)
         .style("text-anchor", "END")
-        .style("font-size", "1em")
+        .style("font-size", ".80em")
         .text("SEASON");
 
     // Adding title on the graph

@@ -86,6 +86,7 @@ function drawLollipop(dataFor_Lollipop) {
             "translate(" + (width / 2) + " ," +
             (height + margin.top) + ")")
         .style("text-anchor", "middle")
+        .style("font-size", ".80em")
         .text("TRANSFER FEE'S IN MILLIONS(€)");
 
     /**
@@ -104,7 +105,7 @@ function drawLollipop(dataFor_Lollipop) {
         .attr("y", -5)
         .attr("x", +5)
         .style("text-anchor", "middle")
-        .style("font-size", "1em")
+        .style("font-size", ".80em")
         .text("PLAYER'S POSITION");
 
     /**
@@ -115,7 +116,7 @@ function drawLollipop(dataFor_Lollipop) {
         .attr("x", (width / 2))
         .attr("y", 0 - (margin.top / 2))
         .attr("text-anchor", "middle")
-        .style("font-size", "20px")
+        .style("font-size", "1em")
         .text("TRANSFER FEES SPEND(€) BY EACH POSITION");
 
     /**
