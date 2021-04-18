@@ -154,6 +154,31 @@ form > div:nth-child(even) {
   transition: 0.4s ease-in-out;
 }
 
+.zizou {
+  background: url('../img/zizou.jpg');
+  background-size: cover;
+}
+
+.ibra {
+  background: url('../img/ibra.jpg');
+  background-size: cover;
+}
+
+.bale {
+  background: url('../img/bale.jpg');
+  background-size: cover;
+}
+
+.neymar {
+  background: url('../img/neymar.jpg');
+  background-size: cover;
+}
+
+.virgil {
+  background: url('../img/virgil.jpg');
+  background-size: cover;
+}
+
 #footer {
   background: #333;
   color: #fff;
@@ -161,3 +186,4 @@ form > div:nth-child(even) {
   text-align: center;
   margin-top: 40px;
 }
+
