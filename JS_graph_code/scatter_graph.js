@@ -172,7 +172,7 @@ function drawScatterGraph(data_for_scatter, all_positions, league_Selected) {
                     .duration(200)
                     .style("opacity", .9);
                 div.html(d.league + "<br/>" + "Transer Fees spend(€) : " + parseInt(d.value / 1000000) + "M <br/>" + "On position: " + d.key)
-                    .style("left", (d3.event.pageX) + "px")
+                    .style("left", (d3.event.pageX - 200) + "px")
                     .style("top", (d3.event.pageY) + "px");
             })
             .on("mouseout", function (d) {
