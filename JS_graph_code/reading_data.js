@@ -1,12 +1,11 @@
-//style="width: 100%; height: 200%"
-// Reading in the data.
+
 var dataPath = "data/top250-00-19.csv";
 
 // Margin variable to use to position visualisation more precise
-var margin = { top: 50, bottom: 70, left: 75, right: 50};
+var margin = {top: 50, bottom: 70, left: 75, right: 50};
 // Getting height and width of the div elements the graphs will be inputted in.
-var width = document.getElementById('Bar_graph').getBoundingClientRect().width - margin.left -  margin.right;	//width of the svg element (in pixels)
-var height = document.getElementById('Bar_graph').getBoundingClientRect().height - margin.bottom - margin.top; //height of the svg element
+var width = document.getElementById('Bar_graph').offsetWidth - margin.left ;	//width of the svg element (in pixels)
+var height = document.getElementById('Bar_graph').offsetHeight - margin.bottom - margin.top; //height of the svg element
 
 // Calling function to draw the graphs needed.
 cleanDataToDraw();
@@ -169,4 +168,4 @@ function cleanDataToDraw() {
 
 
         });
-};
+}
