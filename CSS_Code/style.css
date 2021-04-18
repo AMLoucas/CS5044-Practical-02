@@ -164,8 +164,8 @@ form > div:nth-child(even) {
   background-size: cover;
 }
 
-.bale {
-  background: url('../img/bale.jpg');
+.kaka {
+  background: url('../img/kaka.jpg');
   background-size: cover;
 }
 
@@ -186,4 +186,3 @@ form > div:nth-child(even) {
   text-align: center;
   margin-top: 40px;
 }
-
