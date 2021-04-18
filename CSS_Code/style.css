@@ -13,6 +13,9 @@ body {
   font-family: 'Roboto', sans-serif;
   background: #f4f4f4;
   line-height: 1.6em;
+  background: url('/img/anfield.jpg');
+  background-size: cover;
+  box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.5);
 }
 
 /* Nav Bar */
@@ -20,6 +23,7 @@ body {
   background: #333;
   color: #fff;
   overflow: auto;
+  /* border-bottom: 2px solid grey; */
 }
 
 #navbar ul {
@@ -46,6 +50,67 @@ body {
   text-decoration: none;
 }
 
+.container {
+  margin: 0 35px;
+}
+
+.showcase {
+  padding: 80px;
+  color: #fff;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.showcase h1 {
+  font-size: 70px;
+  margin-bottom: 20px;
+  padding: 30px;
+}
+
+.secondaryContent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin: 10px;
+  margin-bottom: 40px;
+  height: 460px;
+}
+
+.info {
+  background: #e4e4e4;
+  margin-right: 15px;
+  width: 50%;
+  height: 100%;
+  text-align: left;
+  padding: 20px;
+  border: none;
+  border-radius: 7px;
+}
+
+.video {
+  background: #e4e4e4;
+  margin-left: 15px;
+  /* border: 1px solid orange; */
+  width: 50%;
+  height: 100%;
+  text-align: left;
+  padding: 20px;
+  border: none;
+  border-radius: 7px;
+}
+
+.info:hover,
+.video:hover {
+  transform: scale(1.01);
+  transition: 0.25s ease-in-out;
+}
+.info:not(hover),
+.video:not(hover) {
+  transform: scale(1);
+  transition: 0.2s ease-in-out;
+}
+
 form > div:nth-child(even) {
   background: #e4e4e4;
 }
@@ -58,4 +123,38 @@ form > div:nth-child(even) {
 .checkbox:not(hover) {
   transform: scale(1);
   transition: 0.4s ease-in-out;
+}
+
+.insights {
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.insight {
+  background: #e4e4e4;
+  height: 200px;
+  width: 200px;
+  margin: 20px;
+  border: none;
+  border-radius: 7px;
+}
+
+.insight:hover {
+  transform: scale(1.2);
+  transition: 0.4s ease-in-out;
+}
+.card:not(hover) {
+  transform: scale(1);
+  transition: 0.4s ease-in-out;
+}
+
+#footer {
+  background: #333;
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+  margin-top: 40px;
 }
