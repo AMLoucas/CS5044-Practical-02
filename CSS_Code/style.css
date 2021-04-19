@@ -112,6 +112,10 @@ body {
   border-radius: 7px;
 }
 
+iframe {
+  border: none;
+}
+
 .info:hover,
 .video:hover {
   transform: scale(1.01);
