@@ -89,6 +89,15 @@ body {
   padding: 20px;
   border: none;
   border-radius: 7px;
+  font-size: 0.9rem;
+}
+
+.subheading {
+  margin-bottom: 5px;
+}
+
+.p1 {
+  margin-bottom: 10px;
 }
 
 .video {
