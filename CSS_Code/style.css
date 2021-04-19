@@ -91,6 +91,14 @@ body {
   border-radius: 7px;
 }
 
+.subheading {
+  margin-bottom: 5px;
+}
+
+.p1 {
+  margin-bottom: 10px;
+}
+
 .video {
   background: #e4e4e4;
   margin-left: 15px;
