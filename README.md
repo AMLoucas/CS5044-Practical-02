@@ -1,11 +1,11 @@
 # CS5044-Practical-02
-Information Visualisation is used to answer an open ended question. Data that will be used is from Kaggle.
-We will explore data that holds the top 250 football transfers from every season. The data is recorded from 2000-2001(Season) until 2018-2019(Season).
-We want to view how the distribution of the transfer market has changed over the year.
-
- * From which league does each league buy from?
- * How has the prices changed over the years?
- * Does the players position or age play a role in the transfer price?
- * etc.
+CS5044 was a module in my MSc with the course title 'Information Visualisation'. This project was my second practical.
+Myself and Alun (pair project) had to identify data and a suitable open ended question. Once the we identified the data and the question we would tackle we had to create a web-based visualisation using D3 and javascript libraries. Tasks done in the project:
  
+ * Explore datasets and different open-ended questions
+ * Apply an iteration ideation process to brainstorm ideas
+ * Implement final idea from ideation process in D3.js
+ * Sum up all the process and the ideation flow in a report.
+
+All files can be found in the repo.
 
