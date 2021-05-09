@@ -8,4 +8,5 @@ Myself and Alun (pair project) had to identify data and a suitable open ended qu
  * Sum up all the process and the ideation flow in a report.
 
 All files can be found in the repo.
+The module's objective outline was to introduce us to information visualisation principles and introducing to visualisaton programming languages like D3.js and Desktop Tableau.
 
